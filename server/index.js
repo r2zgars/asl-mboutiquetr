@@ -1,4 +1,4 @@
-import "dotenv/config";
+﻿import "dotenv/config";
 import express from "express";
 import multer from "multer";
 import { existsSync, mkdirSync } from "node:fs";
@@ -72,7 +72,7 @@ async function getAdmin(request) {
 
 const requireAdmin = asyncRoute(async (request, response, next) => {
   const session = await getAdmin(request);
-  if (!session) return response.status(401).json({ message: "Oturum açmanız gerekiyor." });
+  if (!session) return response.status(401).json({ message: "Oturum aÃ§manÄ±z gerekiyor." });
   request.admin = session;
   request.sessionToken = parseCookies(request).aslim_admin;
   next();
@@ -84,7 +84,7 @@ async function getCustomer(request) {
 
 const requireCustomer = asyncRoute(async (request, response, next) => {
   const customer = await getCustomer(request);
-  if (!customer) return response.status(401).json({ message: "Bu işlem için giriş yapmanız gerekiyor." });
+  if (!customer) return response.status(401).json({ message: "Bu iÅŸlem iÃ§in giriÅŸ yapmanÄ±z gerekiyor." });
   request.customer = customer;
   request.customerSessionToken = parseCookies(request).aslim_customer;
   next();
@@ -109,22 +109,23 @@ function verificationHash(userId, purpose, code) {
 async function issueVerificationCode(customer, purpose) {
   const code = String(randomInt(100000, 1000000));
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  const target = customer.email;
 
   await data.createVerificationCode({
     userId: customer.id,
     purpose,
-    target: customer.email,
+    target,
     codeHash: verificationHash(customer.id, purpose, code),
     expiresAt
   });
 
   try {
     const result = await sendVerificationEmail({
-      email: customer.email,
-      name: customer.name,
-      code,
-      purpose
-    });
+          email: customer.email,
+          name: customer.name,
+          code,
+          purpose
+        });
     return {
       sent: result.sent,
       developmentCode: !result.sent && process.env.NODE_ENV !== "production" ? code : undefined
@@ -136,23 +137,24 @@ async function issueVerificationCode(customer, purpose) {
 }
 
 async function consumeVerificationCode(customer, purpose, code) {
+  const target = customer.email;
   const record = await data.getLatestVerificationCode({
     userId: customer.id,
     purpose,
-    target: customer.email
+    target
   });
 
   if (!record || new Date(record.expires_at).getTime() < Date.now()) {
     if (record) await data.deleteVerificationCode(record.id);
-    return { ok: false, message: "Doğrulama kodunun süresi dolmuş. Yeni kod isteyin." };
+    return { ok: false, message: "DoÄŸrulama kodunun sÃ¼resi dolmuÅŸ. Yeni kod isteyin." };
   }
   if (Number(record.attempts || 0) >= 5) {
     await data.deleteVerificationCode(record.id);
-    return { ok: false, message: "Çok fazla hatalı deneme yapıldı. Yeni kod isteyin." };
+    return { ok: false, message: "Ã‡ok fazla hatalÄ± deneme yapÄ±ldÄ±. Yeni kod isteyin." };
   }
   if (verificationHash(customer.id, purpose, String(code || "").trim()) !== record.code_hash) {
     await data.incrementVerificationAttempts(record);
-    return { ok: false, message: "Doğrulama kodu hatalı." };
+    return { ok: false, message: "DoÄŸrulama kodu hatalÄ±." };
   }
 
   await data.deleteVerificationCode(record.id);
@@ -191,7 +193,7 @@ app.get("/api/products", asyncRoute(async (request, response) => {
 
 app.get("/api/products/:slug", asyncRoute(async (request, response) => {
   const product = await data.getProductBySlug(request.params.slug);
-  if (!product) return response.status(404).json({ message: "Ürün bulunamadı." });
+  if (!product) return response.status(404).json({ message: "ÃœrÃ¼n bulunamadÄ±." });
   response.json(product);
 }));
 
@@ -199,13 +201,13 @@ app.post("/api/auth/register", asyncRoute(async (request, response) => {
   const name = String(request.body.name || "").trim();
   const email = String(request.body.email || "").trim().toLowerCase();
   const password = String(request.body.password || "");
-  if (name.length < 2) return response.status(400).json({ message: "Ad soyad en az 2 karakter olmalıdır." });
+  if (name.length < 2) return response.status(400).json({ message: "Ad soyad en az 2 karakter olmalÄ±dÄ±r." });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return response.status(400).json({ message: "Geçerli bir e-posta adresi girin." });
+    return response.status(400).json({ message: "GeÃ§erli bir e-posta adresi girin." });
   }
-  if (password.length < 8) return response.status(400).json({ message: "Şifre en az 8 karakter olmalıdır." });
+  if (password.length < 8) return response.status(400).json({ message: "Åifre en az 8 karakter olmalÄ±dÄ±r." });
   if (await data.getUserByEmail(email)) {
-    return response.status(409).json({ message: "Bu e-posta adresiyle daha önce hesap oluşturulmuş." });
+    return response.status(409).json({ message: "Bu e-posta adresiyle daha Ã¶nce hesap oluÅŸturulmuÅŸ." });
   }
 
   const customer = await data.createUser({ email, name, passwordHash: hashPassword(password), role: "customer" });
@@ -219,7 +221,7 @@ app.post("/api/auth/register", asyncRoute(async (request, response) => {
     response.status(201).json({
       ...publicCustomer(customer),
       emailDeliveryFailed: true,
-      message: "Hesabınız oluşturuldu fakat doğrulama e-postası gönderilemedi. Hesabım sayfasından tekrar deneyin."
+      message: "HesabÄ±nÄ±z oluÅŸturuldu fakat doÄŸrulama e-postasÄ± gÃ¶nderilemedi. HesabÄ±m sayfasÄ±ndan tekrar deneyin."
     });
   }
 }));
@@ -228,7 +230,7 @@ app.post("/api/auth/login", asyncRoute(async (request, response) => {
   const email = String(request.body.email || "").trim().toLowerCase();
   const user = await data.getUserByEmail(email);
   if (!user || !verifyPassword(String(request.body.password || ""), user.password_hash)) {
-    return response.status(401).json({ message: "E-posta veya şifre hatalı." });
+    return response.status(401).json({ message: "E-posta veya ÅŸifre hatalÄ±." });
   }
 
   const session = makeSession();
@@ -242,7 +244,7 @@ app.post("/api/auth/login", asyncRoute(async (request, response) => {
     });
   }
   if (user.role !== "customer") {
-    return response.status(401).json({ message: "E-posta veya şifre hatalı." });
+    return response.status(401).json({ message: "E-posta veya ÅŸifre hatalÄ±." });
   }
 
   response.setHeader("Set-Cookie", customerCookie(session.token));
@@ -251,7 +253,7 @@ app.post("/api/auth/login", asyncRoute(async (request, response) => {
 
 app.get("/api/auth/me", asyncRoute(async (request, response) => {
   const customer = await getCustomer(request);
-  if (!customer) return response.status(401).json({ message: "Müşteri oturumu bulunamadı." });
+  if (!customer) return response.status(401).json({ message: "MÃ¼ÅŸteri oturumu bulunamadÄ±." });
   response.json(publicCustomer(customer));
 }));
 
@@ -275,8 +277,8 @@ app.post("/api/account/verification/send", requireCustomer, asyncRoute(async (re
         ? "Doğrulama kodu e-posta adresinize gönderildi."
         : "SMTP ayarı olmadığı için kod yalnızca yerel geliştirme ekranında gösterildi."
     });
-  } catch {
-    response.status(502).json({ message: "Doğrulama e-postası gönderilemedi. SMTP ayarlarını kontrol edin." });
+  } catch (error) {
+    response.status(502).json({ message: error.message || "Doğrulama e-postası gönderilemedi. SMTP ayarlarını kontrol edin." });
   }
 }));
 
@@ -287,12 +289,14 @@ app.post("/api/account/verification/confirm", requireCustomer, asyncRoute(async 
   const customer = await data.updateUserEmailVerified(request.customer.id);
   response.json({ customer: publicCustomer(customer), message: "E-posta adresiniz doğrulandı." });
 }));
-
 app.put("/api/account/profile", requireCustomer, asyncRoute(async (request, response) => {
   const name = String(request.body.name || "").trim();
   const phone = String(request.body.phone || "").trim();
   const email = String(request.body.email || "").trim().toLowerCase();
   if (name.length < 2) return response.status(400).json({ message: "Ad soyad en az 2 karakter olmalıdır." });
+  if (phone.replace(/\D/g, "").length < 10) {
+    return response.status(400).json({ message: "Telefon numarası zorunludur." });
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return response.status(400).json({ message: "Geçerli bir e-posta adresi girin." });
   }
@@ -307,7 +311,7 @@ app.put("/api/account/profile", requireCustomer, asyncRoute(async (request, resp
     name,
     phone,
     email,
-    clearVerification: emailChanged
+    clearEmailVerification: emailChanged
   });
   let verification = {};
   if (emailChanged) {
@@ -326,11 +330,10 @@ app.put("/api/account/profile", requireCustomer, asyncRoute(async (request, resp
       : "Kişisel bilgileriniz güncellendi."
   });
 }));
-
 app.put("/api/account/password", requireCustomer, asyncRoute(async (request, response) => {
   const newPassword = String(request.body.newPassword || "");
   if (newPassword.length < 8) {
-    return response.status(400).json({ message: "Yeni şifre en az 8 karakter olmalıdır." });
+    return response.status(400).json({ message: "Yeni ÅŸifre en az 8 karakter olmalÄ±dÄ±r." });
   }
 
   const user = await data.getUserById(request.customer.id);
@@ -348,13 +351,13 @@ app.put("/api/account/password", requireCustomer, asyncRoute(async (request, res
 
   if (!currentPasswordValid && !codeValid) {
     return response.status(400).json({
-      message: codeError || "Mevcut şifrenizi veya e-posta doğrulama kodunu doğru girin."
+      message: codeError || "Mevcut ÅŸifrenizi veya e-posta doÄŸrulama kodunu doÄŸru girin."
     });
   }
 
   await data.updateUserPassword(user.id, hashPassword(newPassword));
   await data.deleteOtherSessions(user.id, request.customerSessionToken);
-  response.json({ message: "Şifreniz güncellendi." });
+  response.json({ message: "Åifreniz gÃ¼ncellendi." });
 }));
 
 app.get("/api/account/favorites", requireCustomer, asyncRoute(async (request, response) => {
@@ -363,7 +366,7 @@ app.get("/api/account/favorites", requireCustomer, asyncRoute(async (request, re
 
 app.post("/api/account/favorites/:productId", requireCustomer, asyncRoute(async (request, response) => {
   const product = await data.addFavorite(request.customer.id, request.params.productId);
-  if (!product) return response.status(404).json({ message: "Ürün bulunamadı." });
+  if (!product) return response.status(404).json({ message: "ÃœrÃ¼n bulunamadÄ±." });
   response.status(201).json({ productId: Number(product.id) });
 }));
 
@@ -374,28 +377,28 @@ app.delete("/api/account/favorites/:productId", requireCustomer, asyncRoute(asyn
 
 app.get("/api/account/orders", asyncRoute(async (request, response) => {
   const customer = await getCustomer(request);
-  if (!customer) return response.status(401).json({ message: "Müşteri oturumu bulunamadı." });
+  if (!customer) return response.status(401).json({ message: "MÃ¼ÅŸteri oturumu bulunamadÄ±." });
   response.json(await data.listCustomerOrders(customer));
 }));
 
 app.post("/api/orders", asyncRoute(async (request, response) => {
   const customer = await getCustomer(request);
   if (!customer) {
-    return response.status(401).json({ message: "Sipariş verebilmek için giriş yapmanız gerekiyor." });
+    return response.status(401).json({ message: "SipariÅŸ verebilmek iÃ§in giriÅŸ yapmanÄ±z gerekiyor." });
   }
   if (!customer.email_verified_at) {
-    return response.status(403).json({ message: "Sipariş vermeden önce e-posta adresinizi doğrulayın." });
+    return response.status(403).json({ message: "SipariÅŸ vermeden Ã¶nce e-posta adresinizi doÄŸrulayÄ±n." });
   }
   const body = request.body;
   const required = ["customerName", "phone", "city", "district", "neighborhood", "street", "buildingNo", "floor", "apartmentNo"];
   if (required.some((key) => !String(body[key] || "").trim())) {
-    return response.status(400).json({ message: "Lütfen zorunlu teslimat alanlarını doldurun." });
+    return response.status(400).json({ message: "LÃ¼tfen zorunlu teslimat alanlarÄ±nÄ± doldurun." });
   }
   if (!Array.isArray(body.items) || body.items.length === 0) {
-    return response.status(400).json({ message: "Sepetiniz boş." });
+    return response.status(400).json({ message: "Sepetiniz boÅŸ." });
   }
   if (!isPaytrConfigured()) {
-    return response.status(503).json({ message: "Ödeme altyapısı henüz tanımlı değil. Lütfen daha sonra tekrar deneyin." });
+    return response.status(503).json({ message: "Ã–deme altyapÄ±sÄ± henÃ¼z tanÄ±mlÄ± deÄŸil. LÃ¼tfen daha sonra tekrar deneyin." });
   }
 
   const items = [];
@@ -404,7 +407,7 @@ app.post("/api/orders", asyncRoute(async (request, response) => {
     const product = await data.getProductForOrder(requested.productId);
     const quantity = Math.max(1, Math.min(20, Number(requested.quantity || 1)));
     if (!product || product.stock < quantity) {
-      return response.status(400).json({ message: `${product?.name || "Bir ürün"} için yeterli stok yok.` });
+      return response.status(400).json({ message: `${product?.name || "Bir Ã¼rÃ¼n"} iÃ§in yeterli stok yok.` });
     }
     const lineTotal = product.price * quantity;
     subtotal += lineTotal;
@@ -466,7 +469,7 @@ app.post("/api/orders", asyncRoute(async (request, response) => {
       postalCode: String(body.postalCode || "").trim(),
       notes: String(body.notes || "").trim(),
       paymentMethod: "PayTR",
-      status: "Ödeme Bekleniyor",
+      status: "Ã–deme Bekleniyor",
       subtotal,
       shipping,
       total: subtotal + shipping,
@@ -474,7 +477,7 @@ app.post("/api/orders", asyncRoute(async (request, response) => {
     });
   } catch (error) {
     await Promise.allSettled(stockedItems.map((item) => data.restoreProductStock(item.productId, item.quantity)));
-    return response.status(500).json({ message: "Sipariş oluşturulamadı.", detail: error.message });
+    return response.status(500).json({ message: "SipariÅŸ oluÅŸturulamadÄ±.", detail: error.message });
   }
 
   try {
@@ -490,11 +493,11 @@ app.post("/api/orders", asyncRoute(async (request, response) => {
   } catch (error) {
     await Promise.allSettled(stockedItems.map((item) => data.restoreProductStock(item.productId, item.quantity)));
     await data.updateOrder(createdOrder.id, {
-      status: "İptal",
+      status: "Ä°ptal",
       paytr_status: "token_failed",
       cancel_reason: error.message
     });
-    return response.status(502).json({ message: "PayTR ödeme ekranı başlatılamadı.", detail: error.message, orderNo });
+    return response.status(502).json({ message: "PayTR Ã¶deme ekranÄ± baÅŸlatÄ±lamadÄ±.", detail: error.message, orderNo });
   }
 }));
 
@@ -504,17 +507,17 @@ app.get("/api/paytr/config", (_request, response) => {
 
 app.post("/api/paytr/orders/:orderNo/iframe-token", requireCustomer, asyncRoute(async (request, response) => {
   if (!isPaytrConfigured()) {
-    return response.status(503).json({ message: "PayTR bilgileri henüz tanımlı değil." });
+    return response.status(503).json({ message: "PayTR bilgileri henÃ¼z tanÄ±mlÄ± deÄŸil." });
   }
   const order = await data.getOrderByOrderNoForCustomer(request.params.orderNo, request.customer);
-  if (!order) return response.status(404).json({ message: "Sipariş bulunamadı." });
+  if (!order) return response.status(404).json({ message: "SipariÅŸ bulunamadÄ±." });
 
   try {
     const paytr = await createPaytrIframeToken({ request, order, items: safeJson(order.items) });
     await data.updateOrder(order.id, { paytr_token: paytr.token, paytr_status: "token_created" });
     response.json({ orderNo: order.order_no, paytr });
   } catch (error) {
-    response.status(502).json({ message: "PayTR ödeme ekranı başlatılamadı.", detail: error.message });
+    response.status(502).json({ message: "PayTR Ã¶deme ekranÄ± baÅŸlatÄ±lamadÄ±.", detail: error.message });
   }
 }));
 
@@ -536,17 +539,17 @@ app.post("/api/paytr/callback", asyncRoute(async (request, response) => {
       paytr_callback: callbackPayload
     });
   } else {
-    if (order.status !== "İptal") {
+    if (order.status !== "Ä°ptal") {
       await Promise.allSettled(
         safeJson(order.items).map((item) => data.restoreProductStock(item.productId, Number(item.quantity || 0)))
       );
     }
     await data.updateOrder(order.id, {
-      status: "İptal",
+      status: "Ä°ptal",
       paytr_status: "failed",
       paytr_total_amount: Number(request.body.total_amount || 0),
       paytr_callback: callbackPayload,
-      cancel_reason: request.body.failed_reason_msg || "PayTR ödemesi başarısız oldu."
+      cancel_reason: request.body.failed_reason_msg || "PayTR Ã¶demesi baÅŸarÄ±sÄ±z oldu."
     });
   }
 
@@ -557,7 +560,7 @@ app.post("/api/admin/login", asyncRoute(async (request, response) => {
   const email = String(request.body.email || "").trim().toLowerCase();
   const user = await data.getUserByEmail(email, "admin");
   if (!user || !verifyPassword(String(request.body.password || ""), user.password_hash)) {
-    return response.status(401).json({ message: "E-posta veya şifre hatalı." });
+    return response.status(401).json({ message: "E-posta veya ÅŸifre hatalÄ±." });
   }
 
   const session = makeSession();
@@ -633,13 +636,13 @@ app.get("/api/admin/orders", requireAdmin, asyncRoute(async (_request, response)
 }));
 
 app.patch("/api/admin/orders/:id", requireAdmin, asyncRoute(async (request, response) => {
-  const allowed = ["Ödeme Bekleniyor", "Yeni", "Hazırlanıyor", "Kargoda", "Tamamlandı", "İptal"];
+  const allowed = ["Ã–deme Bekleniyor", "Yeni", "HazÄ±rlanÄ±yor", "Kargoda", "TamamlandÄ±", "Ä°ptal"];
   const order = await data.getOrderById(request.params.id);
-  if (!order) return response.status(404).json({ message: "Sipariş bulunamadı." });
+  if (!order) return response.status(404).json({ message: "SipariÅŸ bulunamadÄ±." });
 
   const nextStatus = request.body.status ? String(request.body.status) : order.status;
   if (!allowed.includes(nextStatus)) {
-    return response.status(400).json({ message: "Geçersiz sipariş durumu." });
+    return response.status(400).json({ message: "GeÃ§ersiz sipariÅŸ durumu." });
   }
 
   const trackingCode = request.body.trackingCode !== undefined
@@ -649,10 +652,10 @@ app.patch("/api/admin/orders/:id", requireAdmin, asyncRoute(async (request, resp
     ? String(request.body.cancelReason || "").trim()
     : order.cancel_reason || "";
 
-  if (nextStatus === "İptal" && !cancelReason) {
-    return response.status(400).json({ message: "Sipariş iptali için sebep girin." });
+  if (nextStatus === "Ä°ptal" && !cancelReason) {
+    return response.status(400).json({ message: "SipariÅŸ iptali iÃ§in sebep girin." });
   }
-  if (nextStatus !== "İptal" && request.body.status) {
+  if (nextStatus !== "Ä°ptal" && request.body.status) {
     cancelReason = "";
   }
 
@@ -675,11 +678,11 @@ app.put("/api/admin/settings", requireAdmin, asyncRoute(async (request, response
 app.put("/api/admin/password", requireAdmin, asyncRoute(async (request, response) => {
   const user = await data.getUserById(request.admin.id);
   if (!verifyPassword(String(request.body.currentPassword || ""), user.password_hash)) {
-    return response.status(400).json({ message: "Mevcut şifre hatalı." });
+    return response.status(400).json({ message: "Mevcut ÅŸifre hatalÄ±." });
   }
   const nextPassword = String(request.body.newPassword || "");
   if (nextPassword.length < 10) {
-    return response.status(400).json({ message: "Yeni şifre en az 10 karakter olmalıdır." });
+    return response.status(400).json({ message: "Yeni ÅŸifre en az 10 karakter olmalÄ±dÄ±r." });
   }
   await data.updateUserPassword(request.admin.id, hashPassword(nextPassword));
   await data.deleteOtherSessions(request.admin.id, request.sessionToken);
@@ -687,12 +690,12 @@ app.put("/api/admin/password", requireAdmin, asyncRoute(async (request, response
 }));
 
 app.post("/api/admin/upload", requireAdmin, upload.single("image"), asyncRoute(async (request, response) => {
-  if (!request.file) return response.status(400).json({ message: "Geçerli bir görsel seçin." });
+  if (!request.file) return response.status(400).json({ message: "GeÃ§erli bir gÃ¶rsel seÃ§in." });
   try {
     const url = await uploadImage(request.file);
     response.status(201).json({ url });
   } catch (error) {
-    response.status(500).json({ message: "Görsel yüklenemedi.", detail: error.message });
+    response.status(500).json({ message: "GÃ¶rsel yÃ¼klenemedi.", detail: error.message });
   }
 }));
 
@@ -707,13 +710,19 @@ if (existsSync(distDir)) {
 
 app.use((error, _request, response, _next) => {
   console.error(error);
-  response.status(500).json({ message: "Beklenmeyen bir hata oluştu.", detail: error.message });
+  response.status(500).json({ message: "Beklenmeyen bir hata oluÅŸtu.", detail: error.message });
 });
 
 if (process.env.VERCEL !== "1") {
   app.listen(port, () => {
-    console.log(`Aslım Boutique API http://localhost:${port} adresinde çalışıyor.`);
+    console.log(`AslÄ±m Boutique API http://localhost:${port} adresinde Ã§alÄ±ÅŸÄ±yor.`);
   });
 }
 
 export default app;
+
+
+
+
+
+

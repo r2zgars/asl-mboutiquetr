@@ -7,6 +7,9 @@ function smtpConfigured() {
 export async function sendVerificationEmail({ email, name, code, purpose }) {
   if (!smtpConfigured()) {
     console.log(`[E-posta doğrulama] ${email} / ${purpose}: ${code}`);
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SMTP ayarları tanımlı değil. E-posta göndermek için SMTP bilgilerini ekleyin.");
+    }
     return { sent: false };
   }
 

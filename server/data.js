@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+﻿import { createClient } from "@supabase/supabase-js";
 import { safeJson, slugify, toOrder, toProduct } from "./utils.js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -11,7 +11,7 @@ const supabase = supabaseUrl && serviceRoleKey
   : null;
 
 const productSelect = "*, categories(name, slug)";
-const cancelledStatus = "İptal";
+const cancelledStatus = "Ä°ptal";
 
 export function isDatabaseConfigured() {
   return Boolean(supabase);
@@ -19,7 +19,7 @@ export function isDatabaseConfigured() {
 
 function client() {
   if (!supabase) {
-    throw new Error("Supabase bağlantısı tanımlı değil. SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ekleyin.");
+    throw new Error("Supabase baÄŸlantÄ±sÄ± tanÄ±mlÄ± deÄŸil. SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ekleyin.");
   }
   return supabase;
 }
@@ -187,9 +187,9 @@ export async function updateUserEmailVerified(id) {
   return data;
 }
 
-export async function updateCustomerProfile({ id, name, phone, email, clearVerification }) {
+export async function updateCustomerProfile({ id, name, phone, email, clearEmailVerification }) {
   const payload = { name, phone, email };
-  if (clearVerification) payload.email_verified_at = null;
+  if (clearEmailVerification) payload.email_verified_at = null;
   const { data } = await run(
     client().from("users").update(payload).eq("id", Number(id)).select("*").single()
   );
@@ -286,7 +286,7 @@ export async function uniqueSlug(table, desired, currentId = null) {
 
 export async function normalizeProductBody(body, currentId = null) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("Ürün adı zorunludur.");
+  if (!name) throw new Error("ÃœrÃ¼n adÄ± zorunludur.");
 
   return {
     categoryId: body.categoryId ? Number(body.categoryId) : null,
@@ -452,7 +452,7 @@ export async function listAdminCategories() {
 
 export async function createCategory(body) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("Kategori adı zorunludur.");
+  if (!name) throw new Error("Kategori adÄ± zorunludur.");
   const slug = await uniqueSlug("categories", body.slug || name);
   const { data } = await run(
     client()
@@ -473,7 +473,7 @@ export async function createCategory(body) {
 
 export async function updateCategory(id, body) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("Kategori adı zorunludur.");
+  if (!name) throw new Error("Kategori adÄ± zorunludur.");
   const slug = await uniqueSlug("categories", body.slug || name, id);
   const { data } = await run(
     client()
@@ -541,3 +541,6 @@ export async function upsertSettings(values) {
   if (rows.length) await run(client().from("settings").upsert(rows, { onConflict: "key" }));
   return getSettings();
 }
+
+
+
