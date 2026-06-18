@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -67,14 +67,14 @@ export function StoreLayout() {
   );
 }
 
-function whatsappUrl(settings, message = "Merhaba, mağazanız hakkında bilgi almak istiyorum.") {
+function whatsappUrl(settings, message = "Merhaba, maÄŸazanÄ±z hakkÄ±nda bilgi almak istiyorum.") {
   const number = String(settings.whatsapp || "").replace(/\D/g, "");
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
 function AnnouncementBar({ settings }) {
   const configured = Array.isArray(settings.announcements) ? settings.announcements.filter(Boolean) : [];
-  const messages = configured.length ? configured : [settings.announcement || "AÇILIŞA ÖZEL İNDİRİM"];
+  const messages = configured.length ? configured : [settings.announcement || "AÃ‡ILIÅA Ã–ZEL Ä°NDÄ°RÄ°M"];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -94,11 +94,11 @@ function MobileAppNav() {
     { to: "/", label: "Ana Sayfa", icon: Home },
     { to: "/kategori/new-drop", label: "New Drop", icon: LayoutGrid },
     { to: "/sepet", label: "Sepetim", icon: ShoppingBag, badge: cartCount },
-    { to: customer ? "/hesabim" : "/giris", label: "Hesabım", icon: UserRound }
+    { to: customer ? "/hesabim" : "/giris", label: "HesabÄ±m", icon: UserRound }
   ];
 
   return (
-    <nav className="mobile-app-nav" aria-label="Mobil hızlı menü">
+    <nav className="mobile-app-nav" aria-label="Mobil hÄ±zlÄ± menÃ¼">
       {links.map(({ to, label, icon: Icon, badge }) => {
         const active = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
         return (
@@ -133,11 +133,11 @@ function Header() {
     <>
       <AnnouncementBar settings={settings} />
       <header className="site-header">
-        <button className="icon-button mobile-only" onClick={() => setMenuOpen(true)} aria-label="Menüyü aç">
+        <button className="icon-button mobile-only" onClick={() => setMenuOpen(true)} aria-label="MenÃ¼yÃ¼ aÃ§">
           <Menu size={23} />
         </button>
-        <Link className="brand" to="/" aria-label="Aslım Boutique anasayfa" onClick={scrollPageTop}>
-          {settings.logo ? <img src={settings.logo} alt={settings.storeName || "Aslım Boutique"} /> : settings.storeName}
+        <Link className="brand" to="/" aria-label="AslÄ±m Boutique anasayfa" onClick={scrollPageTop}>
+          {settings.logo ? <img src={settings.logo} alt={settings.storeName || "AslÄ±m Boutique"} /> : settings.storeName}
         </Link>
         <nav className="desktop-nav">
           {categories.map((category) => (
@@ -150,7 +150,7 @@ function Header() {
           <button className="icon-button" onClick={() => setSearchOpen(true)} aria-label="Ara">
             <Search size={23} />
           </button>
-          <Link className="icon-button desktop-only" to={customer ? "/hesabim" : "/giris"} aria-label={customer ? "Hesabım" : "Giriş yap"} onClick={scrollPageTop}>
+          <Link className="icon-button desktop-only" to={customer ? "/hesabim" : "/giris"} aria-label={customer ? "HesabÄ±m" : "GiriÅŸ yap"} onClick={scrollPageTop}>
             <UserRound size={23} />
           </Link>
           <div className="cart-hover-wrap">
@@ -161,7 +161,7 @@ function Header() {
             <div className="cart-preview">
               <div className="cart-preview-head">
                 <strong>Sepetim</strong>
-                <span>{cartCount} ürün</span>
+                <span>{cartCount} Ã¼rÃ¼n</span>
               </div>
               {cart.length ? (
                 <>
@@ -171,17 +171,17 @@ function Header() {
                         <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
                         <span>
                           <strong>{item.name}</strong>
-                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" · ")}</small>
+                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" Â· ")}</small>
                         </span>
                         <b>{formatPrice(item.price * item.quantity)}</b>
                       </Link>
                     ))}
                   </div>
                   <div className="cart-preview-total"><span>Ara toplam</span><strong>{formatPrice(subtotal)}</strong></div>
-                  <Link className="button dark full" to="/sepet">SEPETE GİT</Link>
+                  <Link className="button dark full" to="/sepet">SEPETE GÄ°T</Link>
                 </>
               ) : (
-                <div className="cart-preview-empty">Sepetiniz henüz boş.</div>
+                <div className="cart-preview-empty">Sepetiniz henÃ¼z boÅŸ.</div>
               )}
             </div>
           </div>
@@ -205,11 +205,11 @@ function Header() {
               <Link to="/hesabim" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>HESABIM</Link>
             ) : (
               <>
-                <Link to="/giris" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>GİRİŞ YAP</Link>
+                <Link to="/giris" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>GÄ°RÄ°Å YAP</Link>
                 <Link to="/kayit-ol" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>KAYIT OL</Link>
               </>
             )}
-            {adminAuthenticated && <Link to="/admin" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>YÖNETİM PANELİ</Link>}
+            {adminAuthenticated && <Link to="/admin" onClick={() => { setMenuOpen(false); scrollPageTop(); }}>YÃ–NETÄ°M PANELÄ°</Link>}
           </nav>
         </div>
       )}
@@ -218,9 +218,9 @@ function Header() {
         <div className="search-overlay">
           <button className="icon-button search-close" onClick={() => setSearchOpen(false)}><X /></button>
           <form onSubmit={submitSearch}>
-            <span>Ne aramıştınız?</span>
+            <span>Ne aramÄ±ÅŸtÄ±nÄ±z?</span>
             <div>
-              <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ürün ara..." />
+              <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ÃœrÃ¼n ara..." />
               <button type="submit"><ArrowRight /></button>
             </div>
           </form>
@@ -248,24 +248,24 @@ function Footer() {
           ))}
         </div>
         <div>
-          <h3>Yardım</h3>
-          <a href={whatsappUrl(settings)} target="_blank" rel="noreferrer">İletişim</a>
-          <Link to="/sss">Sıkça Sorulan Sorular</Link>
+          <h3>YardÄ±m</h3>
+          <a href={whatsappUrl(settings)} target="_blank" rel="noreferrer">Ä°letiÅŸim</a>
+          <Link to="/sss">SÄ±kÃ§a Sorulan Sorular</Link>
           <Link to="/sepet">Sepetim</Link>
           {customer ? (
-            <Link to="/hesabim">Hesabım</Link>
+            <Link to="/hesabim">HesabÄ±m</Link>
           ) : (
             <>
-              <Link to="/giris">Giriş Yap</Link>
-              <Link to="/kayit-ol">Kayıt Ol</Link>
+              <Link to="/giris">GiriÅŸ Yap</Link>
+              <Link to="/kayit-ol">KayÄ±t Ol</Link>
             </>
           )}
-          {adminAuthenticated && <Link to="/admin">Yönetim Paneli</Link>}
+          {adminAuthenticated && <Link to="/admin">YÃ¶netim Paneli</Link>}
         </div>
         <div>
-          <h3>İletişim</h3>
+          <h3>Ä°letiÅŸim</h3>
           <a className="footer-whatsapp" href={whatsappUrl(settings)} target="_blank" rel="noreferrer">
-            <MessageCircle size={18} /> WhatsApp'tan yazın
+            <MessageCircle size={18} /> WhatsApp'tan yazÄ±n
           </a>
           <p>{settings.phone}</p>
           <p>{settings.email}</p>
@@ -273,8 +273,8 @@ function Footer() {
         </div>
       </section>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} Aslım Boutique. Tüm hakları saklıdır.</span>
-        <span>Güvenli alışveriş · SSL koruması</span>
+        <span>Â© {new Date().getFullYear()} AslÄ±m Boutique. TÃ¼m haklarÄ± saklÄ±dÄ±r.</span>
+        <span>GÃ¼venli alÄ±ÅŸveriÅŸ Â· SSL korumasÄ±</span>
       </div>
     </footer>
   );
@@ -305,10 +305,10 @@ export function HomePage() {
         ))}
         <div className="hero-shade" />
         <div className="hero-copy reveal">
-          <p className="eyebrow">YENİ SEZON · 2026</p>
+          <p className="eyebrow">YENÄ° SEZON Â· 2026</p>
           <h1>{settings.heroTitle}</h1>
           <p>{settings.heroSubtitle}</p>
-          <Link className="button light" to="/kategori/new-drop">{settings.heroButton || "KEŞFET"}</Link>
+          <Link className="button light" to="/kategori/new-drop">{settings.heroButton || "KEÅFET"}</Link>
         </div>
         <button className="hero-arrow left" onClick={() => setSlide((slide - 1 + slides.length) % slides.length)}>
           <ArrowLeft />
@@ -324,7 +324,7 @@ export function HomePage() {
       <TrustStrip settings={settings} />
 
       <section className="section">
-        <SectionHeading eyebrow="ÖZENLE SEÇİLDİ" title="Yeni gelenler" link="/kategori/new-drop" />
+        <SectionHeading eyebrow="Ã–ZENLE SEÃ‡Ä°LDÄ°" title="Yeni gelenler" link="/kategori/new-drop" />
         <div className="product-grid">
           {featured.map((product) => <ProductCard key={product.id} product={product} />)}
         </div>
@@ -337,9 +337,9 @@ export function HomePage() {
 function TrustStrip({ settings }) {
   return (
     <section className="trust-strip reveal">
-      <div><ShieldCheck /><span><strong>Güvenli alışveriş</strong><small>256 Bit SSL koruması</small></span></div>
-      <div><Truck /><span><strong>Hızlı gönderim</strong><small>Özenli ve takipli teslimat</small></span></div>
-      <div><PackageCheck /><span><strong>Kolay iade</strong><small>{settings.returnDays || 15} iş günü içinde</small></span></div>
+      <div><ShieldCheck /><span><strong>GÃ¼venli alÄ±ÅŸveriÅŸ</strong><small>256 Bit SSL korumasÄ±</small></span></div>
+      <div><Truck /><span><strong>HÄ±zlÄ± gÃ¶nderim</strong><small>Ã–zenli ve takipli teslimat</small></span></div>
+      <div><PackageCheck /><span><strong>Kolay iade</strong><small>{settings.returnDays || 15} iÅŸ gÃ¼nÃ¼ iÃ§inde</small></span></div>
     </section>
   );
 }
@@ -348,7 +348,7 @@ function SectionHeading({ eyebrow, title, link }) {
   return (
     <div className="section-heading reveal">
       <div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div>
-      {link && <Link className="text-link" to={link}>TÜMÜNÜ GÖR <ArrowRight size={18} /></Link>}
+      {link && <Link className="text-link" to={link}>TÃœMÃœNÃœ GÃ–R <ArrowRight size={18} /></Link>}
     </div>
   );
 }
@@ -373,8 +373,8 @@ function FavoriteButton({ productId, className = "" }) {
       type="button"
       className={`favorite-button ${favorite ? "active" : ""} ${className}`}
       onClick={toggle}
-      aria-label={favorite ? "Beğenilenlerden çıkar" : "Beğenilenlere ekle"}
-      title={favorite ? "Beğenilenlerden çıkar" : "Beğenilenlere ekle"}
+      aria-label={favorite ? "BeÄŸenilenlerden Ã§Ä±kar" : "BeÄŸenilenlere ekle"}
+      title={favorite ? "BeÄŸenilenlerden Ã§Ä±kar" : "BeÄŸenilenlere ekle"}
     >
       <Heart size={20} fill={favorite ? "currentColor" : "none"} />
     </button>
@@ -426,7 +426,7 @@ export function ProductCard({ product }) {
           onClick={quickAdd}
           aria-live="polite"
         >
-          {soldOut ? "STOKTA YOK" : added ? <><Check size={14} /> EKLENDİ</> : "SEPETE EKLE"}
+          {soldOut ? "STOKTA YOK" : added ? <><Check size={14} /> EKLENDÄ°</> : "SEPETE EKLE"}
         </button>
       </div>
     </article>
@@ -465,11 +465,11 @@ export function CategoryPage() {
         <div><p>ASLIM BOUTIQUE</p><h1>{category?.name || "Koleksiyon"}</h1><span>{category?.description}</span></div>
       </div>
       <div className="listing-toolbar">
-        <span>{list.length} ürün</span>
-        <label>Sırala <ChevronDown size={16} />
+        <span>{list.length} Ã¼rÃ¼n</span>
+        <label>SÄ±rala <ChevronDown size={16} />
           <select value={sort} onChange={(event) => setSort(event.target.value)}>
             <option value="newest">En Yeni</option>
-            <option value="featured">Önerilen</option>
+            <option value="featured">Ã–nerilen</option>
             <option value="priceAsc">Fiyat: Artan</option>
             <option value="priceDesc">Fiyat: Azalan</option>
           </select>
@@ -478,7 +478,7 @@ export function CategoryPage() {
       {list.length ? (
         <div className="product-grid listing-grid">{list.map((product) => <ProductCard key={product.id} product={product} />)}</div>
       ) : (
-        <div className="empty-state"><ShoppingBag /><h2>Bu kategoride henüz ürün yok.</h2><Link to="/">Anasayfaya dön</Link></div>
+        <div className="empty-state"><ShoppingBag /><h2>Bu kategoride henÃ¼z Ã¼rÃ¼n yok.</h2><Link to="/">Anasayfaya dÃ¶n</Link></div>
       )}
     </div>
   );
@@ -495,7 +495,7 @@ export function SearchPage() {
   if (loading) return <Loading />;
   return (
     <div className="simple-page">
-      <SectionHeading eyebrow={`${list.length} SONUÇ`} title={`“${query}” için arama sonuçları`} />
+      <SectionHeading eyebrow={`${list.length} SONUÃ‡`} title={`â€œ${query}â€ iÃ§in arama sonuÃ§larÄ±`} />
       <div className="product-grid">{list.map((product) => <ProductCard key={product.id} product={product} />)}</div>
     </div>
   );
@@ -545,7 +545,7 @@ export function ProductPage() {
           <strong>{formatPrice(product.price)}</strong>
           {product.compare_price > product.price && <del>{formatPrice(product.compare_price)}</del>}
         </div>
-        <p className="installment">Peşin fiyatına 3 taksit imkânı</p>
+        <p className="installment">PeÅŸin fiyatÄ±na 3 taksit imkÃ¢nÄ±</p>
         {product.colors?.length > 0 && (
           <div className="option-group">
             <div><strong>Renk</strong><span>{color}</span></div>
@@ -569,18 +569,18 @@ export function ProductPage() {
             <button onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}><Plus size={16} /></button>
           </div>
           <button className="button dark add-button" onClick={add} disabled={product.stock <= 0}>
-            {added ? <><Check size={19} /> EKLENDİ</> : product.stock > 0 ? "SEPETE EKLE" : "STOKTA YOK"}
+            {added ? <><Check size={19} /> EKLENDÄ°</> : product.stock > 0 ? "SEPETE EKLE" : "STOKTA YOK"}
           </button>
         </div>
         <div className="stock-note">{product.stock > 0 ? `Stokta ${product.stock} adet` : "Stokta yok"}</div>
         <div className="product-description">
-          <h2>Ürün açıklaması</h2>
+          <h2>ÃœrÃ¼n aÃ§Ä±klamasÄ±</h2>
           <p>{product.description}</p>
-          <p className="sku">Ürün kodu: {product.sku}</p>
+          <p className="sku">ÃœrÃ¼n kodu: {product.sku}</p>
         </div>
         <div className="product-benefits">
-          <div><Truck /><span><strong>Hızlı gönderim</strong>1-3 iş günü içinde kargoda</span></div>
-          <div><LockKeyhole /><span><strong>Güvenli ödeme</strong>Bilgileriniz koruma altında</span></div>
+          <div><Truck /><span><strong>HÄ±zlÄ± gÃ¶nderim</strong>1-3 iÅŸ gÃ¼nÃ¼ iÃ§inde kargoda</span></div>
+          <div><LockKeyhole /><span><strong>GÃ¼venli Ã¶deme</strong>Bilgileriniz koruma altÄ±nda</span></div>
         </div>
       </div>
     </div>
@@ -590,7 +590,7 @@ export function ProductPage() {
 export function CartPage() {
   const { cart, subtotal, shipping, total, updateQuantity, removeFromCart, settings } = useStore();
   if (!cart.length) {
-    return <div className="empty-state cart-empty"><ShoppingBag /><h1>Sepetiniz boş.</h1><p>Yeni koleksiyonu keşfetmeye ne dersiniz?</p><Link className="button dark" to="/">ALIŞVERİŞE BAŞLA</Link></div>;
+    return <div className="empty-state cart-empty"><ShoppingBag /><h1>Sepetiniz boÅŸ.</h1><p>Yeni koleksiyonu keÅŸfetmeye ne dersiniz?</p><Link className="button dark" to="/">ALIÅVERÄ°ÅE BAÅLA</Link></div>;
   }
   const remaining = Math.max(0, Number(settings.freeShippingThreshold || 0) - subtotal);
   return (
@@ -600,16 +600,16 @@ export function CartPage() {
         <section className="cart-items">
           {remaining > 0 ? (
             <div className="shipping-progress">
-              Ücretsiz kargo için <strong>{formatPrice(remaining)}</strong> daha ekleyin.
+              Ãœcretsiz kargo iÃ§in <strong>{formatPrice(remaining)}</strong> daha ekleyin.
               <div><span style={{ width: `${Math.min(100, (subtotal / settings.freeShippingThreshold) * 100)}%` }} /></div>
             </div>
-          ) : <div className="shipping-progress success"><Check size={18} /> Ücretsiz kargo kazandınız.</div>}
+          ) : <div className="shipping-progress success"><Check size={18} /> Ãœcretsiz kargo kazandÄ±nÄ±z.</div>}
           {cart.map((item) => (
             <article className="cart-item" key={item.key}>
               <Link to={`/urun/${item.slug}`}><img src={item.image} alt={item.name} /></Link>
               <div className="cart-item-info">
                 <Link to={`/urun/${item.slug}`}><h2>{item.name}</h2></Link>
-                <p>{[item.color, item.size].filter(Boolean).join(" · ")}</p>
+                <p>{[item.color, item.size].filter(Boolean).join(" Â· ")}</p>
                 <strong>{formatPrice(item.price)}</strong>
                 <div className="quantity small">
                   <button onClick={() => updateQuantity(item.key, item.quantity - 1)}><Minus size={14} /></button>
@@ -622,7 +622,7 @@ export function CartPage() {
           ))}
         </section>
         <OrderSummary subtotal={subtotal} shipping={shipping} total={total}>
-          <Link className="button dark full" to="/odeme">SİPARİŞİ TAMAMLA</Link>
+          <Link className="button dark full" to="/odeme">SÄ°PARÄ°ÅÄ° TAMAMLA</Link>
         </OrderSummary>
       </div>
     </div>
@@ -632,12 +632,12 @@ export function CartPage() {
 function OrderSummary({ subtotal, shipping, total, children }) {
   return (
     <aside className="order-summary">
-      <h2>Sipariş özeti</h2>
+      <h2>SipariÅŸ Ã¶zeti</h2>
       <div><span>Ara toplam</span><strong>{formatPrice(subtotal)}</strong></div>
-      <div><span>Kargo</span><strong>{shipping ? formatPrice(shipping) : "Ücretsiz"}</strong></div>
+      <div><span>Kargo</span><strong>{shipping ? formatPrice(shipping) : "Ãœcretsiz"}</strong></div>
       <div className="summary-total"><span>Toplam</span><strong>{formatPrice(total)}</strong></div>
       {children}
-      <p><LockKeyhole size={15} /> Güvenli ödeme altyapısı</p>
+      <p><LockKeyhole size={15} /> GÃ¼venli Ã¶deme altyapÄ±sÄ±</p>
     </aside>
   );
 }
@@ -671,16 +671,16 @@ export function CheckoutPage() {
     }));
   }, [customer]);
 
-  if (!cart.length) return <div className="empty-state"><h1>Sepetiniz boş.</h1><Link to="/">Alışverişe dön</Link></div>;
+  if (!cart.length) return <div className="empty-state"><h1>Sepetiniz boÅŸ.</h1><Link to="/">AlÄ±ÅŸveriÅŸe dÃ¶n</Link></div>;
   if (authLoading) return <Loading />;
   if (!customer) {
     return (
       <div className="checkout-account-gate">
         <UserRound size={38} strokeWidth={1.4} />
-        <h1>Sipariş için hesabınıza giriş yapın.</h1>
-        <p>Sipariş güvenliği ve takibi için kayıtlı bir müşteri hesabı gereklidir.</p>
+        <h1>SipariÅŸ iÃ§in hesabÄ±nÄ±za giriÅŸ yapÄ±n.</h1>
+        <p>SipariÅŸ gÃ¼venliÄŸi ve takibi iÃ§in kayÄ±tlÄ± bir mÃ¼ÅŸteri hesabÄ± gereklidir.</p>
         <div>
-          <Link className="button dark" to="/giris">GİRİŞ YAP</Link>
+          <Link className="button dark" to="/giris">GÄ°RÄ°Å YAP</Link>
           <Link className="button" to="/kayit-ol">KAYIT OL</Link>
         </div>
       </div>
@@ -690,9 +690,9 @@ export function CheckoutPage() {
     return (
       <div className="checkout-account-gate">
         <ShieldCheck size={38} strokeWidth={1.4} />
-        <h1>E-posta adresinizi doğrulayın.</h1>
-        <p>Siparişi tamamlamadan önce {customer.email} adresine gönderilen kodu girmeniz gerekiyor.</p>
-        <Link className="button dark" to="/hesabim?bolum=profile">ŞİMDİ DOĞRULA</Link>
+        <h1>E-posta adresinizi doÄŸrulayÄ±n.</h1>
+        <p>SipariÅŸi tamamlamadan Ã¶nce {customer.email} adresine gÃ¶nderilen kodu girmeniz gerekiyor.</p>
+        <Link className="button dark" to="/hesabim?bolum=profile">ÅÄ°MDÄ° DOÄRULA</Link>
       </div>
     );
   }
@@ -734,27 +734,27 @@ export function CheckoutPage() {
   return (
     <div className="checkout-page">
       <form className="checkout-form" onSubmit={submit}>
-        <p className="eyebrow">GÜVENLİ ÖDEME</p>
+        <p className="eyebrow">GÃœVENLÄ° Ã–DEME</p>
         <h1>Teslimat bilgileri</h1>
         {error && <div className="form-error">{error}</div>}
         <div className="form-grid">
           <label className="wide">Ad soyad<input name="customerName" value={form.customerName} onChange={update} required /></label>
           <label>E-posta<input type="email" name="email" value={form.email} readOnly /></label>
           <label>Telefon<input name="phone" value={form.phone} onChange={update} required /></label>
-          <label>İl
+          <label>Ä°l
             <select
               name="city"
               value={form.city}
               onChange={(event) => setForm({ ...form, city: event.target.value, district: "" })}
               required
             >
-              <option value="">İl seçin</option>
+              <option value="">Ä°l seÃ§in</option>
               {cities.map((city) => <option key={city.code} value={city.name}>{city.name}</option>)}
             </select>
           </label>
-          <label>İlçe
+          <label>Ä°lÃ§e
             <select name="district" value={form.district} onChange={update} required disabled={!form.city}>
-              <option value="">İlçe seçin</option>
+              <option value="">Ä°lÃ§e seÃ§in</option>
               {districts.map((district) => <option key={district} value={district}>{district}</option>)}
             </select>
           </label>
@@ -764,20 +764,20 @@ export function CheckoutPage() {
           <label>Kat<input name="floor" value={form.floor} onChange={update} required /></label>
           <label>Daire no<input name="apartmentNo" value={form.apartmentNo} onChange={update} required /></label>
           <label>Posta kodu<input name="postalCode" value={form.postalCode} onChange={update} /></label>
-          <label className="wide">Adres tarifi<textarea name="address" value={form.address} onChange={update} rows="2" placeholder="Site adı, blok, kapı bilgisi veya tarif" /></label>
-          <label className="wide">Sipariş notu<textarea name="notes" value={form.notes} onChange={update} rows="2" /></label>
+          <label className="wide">Adres tarifi<textarea name="address" value={form.address} onChange={update} rows="2" placeholder="Site adÄ±, blok, kapÄ± bilgisi veya tarif" /></label>
+          <label className="wide">SipariÅŸ notu<textarea name="notes" value={form.notes} onChange={update} rows="2" /></label>
         </div>
-        <h2>Ödeme yöntemi</h2>
+        <h2>Ã–deme yÃ¶ntemi</h2>
         <label className="payment-choice">
           <input type="radio" name="paymentMethod" value="PayTR" checked readOnly />
-          <span><strong>Kart ile Ödeme</strong><small>PayTR güvenli ödeme ekranında kartınızla ödeyin.</small></span>
+          <span><strong>Kart ile Ã–deme</strong><small>PayTR gÃ¼venli Ã¶deme ekranÄ±nda kartÄ±nÄ±zla Ã¶deyin.</small></span>
         </label>
         {!paytrConfig.enabled && (
           <div className="form-error payment-unavailable">
-            Ödeme altyapısı hazırlanıyor. PayTR bilgileri tanımlanınca sipariş almaya hazır olacak.
+            Ã–deme altyapÄ±sÄ± hazÄ±rlanÄ±yor. PayTR bilgileri tanÄ±mlanÄ±nca sipariÅŸ almaya hazÄ±r olacak.
           </div>
         )}
-        <button className="button dark full" disabled={submitting || !paytrConfig.enabled}>{submitting ? "ÖDEME EKRANI AÇILIYOR..." : `${formatPrice(total)} · ÖDEMEYE GEÇ`}</button>
+        <button className="button dark full" disabled={submitting || !paytrConfig.enabled}>{submitting ? "Ã–DEME EKRANI AÃ‡ILIYOR..." : `${formatPrice(total)} Â· Ã–DEMEYE GEÃ‡`}</button>
       </form>
       <OrderSummary subtotal={subtotal} shipping={shipping} total={total}>
         <div className="checkout-mini-items">
@@ -796,11 +796,11 @@ export function OrderSuccessPage() {
   return (
     <div className="success-page">
       <div className="success-check"><Check /></div>
-      <p className="eyebrow">SİPARİŞİNİZ ALINDI</p>
-      <h1>Teşekkür ederiz.</h1>
-      <p>{paytrReturn ? "Ödeme dönüşünüz alındı. Siparişinizin kesin durumu PayTR bildirimi geldikten sonra hesabınızda güncellenecek." : "Siparişiniz başarıyla oluşturuldu. Hazırlık sürecini yönetim panelinden takip edebilirsiniz."}</p>
-      {result && <div className="order-number"><span>Sipariş numarası</span><strong>{result.orderNo}</strong></div>}
-      <Link className="button dark" to="/">ANASAYFAYA DÖN</Link>
+      <p className="eyebrow">SÄ°PARÄ°ÅÄ°NÄ°Z ALINDI</p>
+      <h1>TeÅŸekkÃ¼r ederiz.</h1>
+      <p>{paytrReturn ? "Ã–deme dÃ¶nÃ¼ÅŸÃ¼nÃ¼z alÄ±ndÄ±. SipariÅŸinizin kesin durumu PayTR bildirimi geldikten sonra hesabÄ±nÄ±zda gÃ¼ncellenecek." : "SipariÅŸiniz baÅŸarÄ±yla oluÅŸturuldu. HazÄ±rlÄ±k sÃ¼recini yÃ¶netim panelinden takip edebilirsiniz."}</p>
+      {result && <div className="order-number"><span>SipariÅŸ numarasÄ±</span><strong>{result.orderNo}</strong></div>}
+      <Link className="button dark" to="/">ANASAYFAYA DÃ–N</Link>
     </div>
   );
 }
@@ -838,16 +838,16 @@ export function PaytrPaymentPage() {
   return (
     <div className="paytr-page">
       <div className="paytr-head">
-        <p className="eyebrow">GÜVENLİ ÖDEME</p>
-        <h1>Kart ile ödeme</h1>
-        <p>Sipariş No: <strong>{orderNo}</strong></p>
+        <p className="eyebrow">GÃœVENLÄ° Ã–DEME</p>
+        <h1>Kart ile Ã¶deme</h1>
+        <p>SipariÅŸ No: <strong>{orderNo}</strong></p>
       </div>
       {error && <div className="form-error">{error}</div>}
       {!error && !paytr?.iframeUrl && <Loading />}
       {paytr?.iframeUrl && (
         <iframe
           id="paytriframe"
-          title="PayTR Güvenli Ödeme"
+          title="PayTR GÃ¼venli Ã–deme"
           src={paytr.iframeUrl}
           frameBorder="0"
           scrolling="no"
@@ -864,11 +864,11 @@ export function PaymentFailurePage() {
   return (
     <div className="success-page payment-failed-page">
       <div className="success-check failed"><X /></div>
-      <p className="eyebrow">ÖDEME TAMAMLANAMADI</p>
-      <h1>Ödeme başarısız oldu.</h1>
-      <p>İsterseniz sepetinize dönüp tekrar deneyebilir veya bizimle iletişime geçebilirsiniz.</p>
-      {orderNo && <div className="order-number"><span>Sipariş numarası</span><strong>{orderNo}</strong></div>}
-      <Link className="button dark" to="/sepet">SEPETE DÖN</Link>
+      <p className="eyebrow">Ã–DEME TAMAMLANAMADI</p>
+      <h1>Ã–deme baÅŸarÄ±sÄ±z oldu.</h1>
+      <p>Ä°sterseniz sepetinize dÃ¶nÃ¼p tekrar deneyebilir veya bizimle iletiÅŸime geÃ§ebilirsiniz.</p>
+      {orderNo && <div className="order-number"><span>SipariÅŸ numarasÄ±</span><strong>{orderNo}</strong></div>}
+      <Link className="button dark" to="/sepet">SEPETE DÃ–N</Link>
     </div>
   );
 }
@@ -879,18 +879,18 @@ export function InfoPage({ type }) {
   return (
     <div className="info-page">
       <p className="eyebrow">ASLIM BOUTIQUE</p>
-      <h1>{isContact ? "WhatsApp" : "Sıkça Sorulan Sorular"}</h1>
+      <h1>{isContact ? "WhatsApp" : "SÄ±kÃ§a Sorulan Sorular"}</h1>
       {isContact ? (
         <div className="contact-card">
-          <div><span>Hızlı iletişim</span><strong>{settings.phone}</strong></div>
-          <div><span>Mesaj gönderin</span><a className="button dark" href={whatsappUrl(settings)} target="_blank" rel="noreferrer"><MessageCircle size={18} /> WHATSAPP</a></div>
+          <div><span>HÄ±zlÄ± iletiÅŸim</span><strong>{settings.phone}</strong></div>
+          <div><span>Mesaj gÃ¶nderin</span><a className="button dark" href={whatsappUrl(settings)} target="_blank" rel="noreferrer"><MessageCircle size={18} /> WHATSAPP</a></div>
           <div><span>Adres</span><strong>{settings.address}</strong></div>
         </div>
       ) : (
         <div className="faq-list">
-          <details open><summary>Kargom ne zaman gönderilir?</summary><p>Siparişler genellikle 1-3 iş günü içinde hazırlanıp kargoya teslim edilir.</p></details>
-          <details><summary>İade süresi kaç gün?</summary><p>Ürünlerinizi teslim aldıktan sonra {settings.returnDays || 15} iş günü içinde iade talebi oluşturabilirsiniz.</p></details>
-          <details><summary>Nasıl ödeme yapabilirim?</summary><p>Ödemeler PayTR güvenli ödeme altyapısı üzerinden kart ile alınır.</p></details>
+          <details open><summary>Kargom ne zaman gÃ¶nderilir?</summary><p>SipariÅŸler genellikle 1-3 iÅŸ gÃ¼nÃ¼ iÃ§inde hazÄ±rlanÄ±p kargoya teslim edilir.</p></details>
+          <details><summary>Ä°ade sÃ¼resi kaÃ§ gÃ¼n?</summary><p>ÃœrÃ¼nlerinizi teslim aldÄ±ktan sonra {settings.returnDays || 15} iÅŸ gÃ¼nÃ¼ iÃ§inde iade talebi oluÅŸturabilirsiniz.</p></details>
+          <details><summary>NasÄ±l Ã¶deme yapabilirim?</summary><p>Ã–demeler PayTR gÃ¼venli Ã¶deme altyapÄ±sÄ± Ã¼zerinden kart ile alÄ±nÄ±r.</p></details>
         </div>
       )}
     </div>
@@ -917,7 +917,7 @@ export function CustomerAuthPage({ mode }) {
     event.preventDefault();
     setError("");
     if (register && form.password !== form.confirmPassword) {
-      setError("Şifreler eşleşmiyor.");
+      setError("Åifreler eÅŸleÅŸmiyor.");
       return;
     }
     setSubmitting(true);
@@ -945,18 +945,18 @@ export function CustomerAuthPage({ mode }) {
     <div className="customer-auth-page">
       <section className="customer-auth-copy">
         <p className="eyebrow">ASLIM BOUTIQUE</p>
-        <h1>{register ? "Aramıza katılın." : "Tekrar hoş geldiniz."}</h1>
-        <p>{register ? "Siparişlerinizi daha kolay yönetmek için hesabınızı oluşturun." : "Hesabınıza giriş yaparak alışverişinize devam edin."}</p>
+        <h1>{register ? "AramÄ±za katÄ±lÄ±n." : "Tekrar hoÅŸ geldiniz."}</h1>
+        <p>{register ? "SipariÅŸlerinizi daha kolay yÃ¶netmek iÃ§in hesabÄ±nÄ±zÄ± oluÅŸturun." : "HesabÄ±nÄ±za giriÅŸ yaparak alÄ±ÅŸveriÅŸinize devam edin."}</p>
       </section>
       <form className="customer-auth-form" onSubmit={submit}>
-        <h2>{register ? "Kayıt Ol" : "Giriş Yap"}</h2>
+        <h2>{register ? "KayÄ±t Ol" : "GiriÅŸ Yap"}</h2>
         {error && <div className="form-error">{error}</div>}
         {register && <label>Ad soyad<input name="name" value={form.name} onChange={update} autoComplete="name" required /></label>}
         <label>E-posta<input type="email" name="email" value={form.email} onChange={update} autoComplete="email" required /></label>
-        <label>Şifre<input type="password" name="password" value={form.password} onChange={update} autoComplete={register ? "new-password" : "current-password"} minLength={register ? 8 : undefined} required /></label>
-        {register && <label>Şifre tekrar<input type="password" name="confirmPassword" value={form.confirmPassword} onChange={update} autoComplete="new-password" required /></label>}
-        <button className="button dark full" disabled={submitting}>{submitting ? "LÜTFEN BEKLEYİN..." : register ? "KAYIT OL" : "GİRİŞ YAP"}</button>
-        <p>{register ? "Zaten hesabınız var mı?" : "Henüz hesabınız yok mu?"} <Link to={register ? "/giris" : "/kayit-ol"}>{register ? "Giriş yapın" : "Kayıt olun"}</Link></p>
+        <label>Åifre<input type="password" name="password" value={form.password} onChange={update} autoComplete={register ? "new-password" : "current-password"} minLength={register ? 8 : undefined} required /></label>
+        {register && <label>Åifre tekrar<input type="password" name="confirmPassword" value={form.confirmPassword} onChange={update} autoComplete="new-password" required /></label>}
+        <button className="button dark full" disabled={submitting}>{submitting ? "LÃœTFEN BEKLEYÄ°N..." : register ? "KAYIT OL" : "GÄ°RÄ°Å YAP"}</button>
+        <p>{register ? "Zaten hesabÄ±nÄ±z var mÄ±?" : "HenÃ¼z hesabÄ±nÄ±z yok mu?"} <Link to={register ? "/giris" : "/kayit-ol"}>{register ? "GiriÅŸ yapÄ±n" : "KayÄ±t olun"}</Link></p>
       </form>
     </div>
   );
@@ -1082,7 +1082,7 @@ export function CustomerAccountPage() {
     setPasswordError("");
     setPasswordMessage("");
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("Yeni şifreler eşleşmiyor.");
+      setPasswordError("Yeni ÅŸifreler eÅŸleÅŸmiyor.");
       return;
     }
     setPasswordSaving(true);
@@ -1111,17 +1111,17 @@ export function CustomerAccountPage() {
   const favoriteProducts = products.filter((product) => favoriteIds.includes(Number(product.id)));
 
   const sections = [
-    { id: "profile", label: "Kişisel Bilgilerim", group: "Kişisel Bilgilerim" },
-    { id: "addresses", label: "Adreslerim", group: "Kişisel Bilgilerim" },
-    { id: "favorites", label: "Beğendiğim Ürünler", group: "Kişisel Bilgilerim" },
-    { id: "orders", label: "Siparişlerim", group: "Sipariş Bilgilerim" }
+    { id: "profile", label: "KiÅŸisel Bilgilerim", group: "KiÅŸisel Bilgilerim" },
+    { id: "addresses", label: "Adreslerim", group: "KiÅŸisel Bilgilerim" },
+    { id: "favorites", label: "BeÄŸendiÄŸim ÃœrÃ¼nler", group: "KiÅŸisel Bilgilerim" },
+    { id: "orders", label: "SipariÅŸlerim", group: "SipariÅŸ Bilgilerim" }
   ];
 
   const sectionTitle = {
-    profile: "Kişisel Bilgilerim",
+    profile: "KiÅŸisel Bilgilerim",
     addresses: "Adreslerim",
-    favorites: "Beğendiğim Ürünler",
-    orders: `Siparişlerim (${orders.length})`
+    favorites: "BeÄŸendiÄŸim ÃœrÃ¼nler",
+    orders: `SipariÅŸlerim (${orders.length})`
   }[activeSection];
 
   return (
@@ -1131,12 +1131,12 @@ export function CustomerAccountPage() {
           <div className="account-avatar">{customer.name.slice(0, 1).toLocaleUpperCase("tr-TR")}</div>
           <div>
             <strong>{customer.name}</strong>
-            <button className="account-logout" onClick={logout}><LogOut size={15} /> Çıkış yap</button>
+            <button className="account-logout" onClick={logout}><LogOut size={15} /> Ã‡Ä±kÄ±ÅŸ yap</button>
           </div>
         </div>
 
         <div className="account-menu-groups">
-          {["Kişisel Bilgilerim", "Sipariş Bilgilerim"].map((group) => (
+          {["KiÅŸisel Bilgilerim", "SipariÅŸ Bilgilerim"].map((group) => (
             <div className="account-menu-group" key={group}>
               <h2>{group}</h2>
               {sections.filter((section) => section.group === group).map((section) => (
@@ -1165,7 +1165,7 @@ export function CustomerAccountPage() {
               {orders.map((order) => (
                 <article className="account-order-card" key={order.id}>
                   <div className="account-order-head">
-                    <div><span>Sipariş No</span><strong>{order.order_no}</strong></div>
+                    <div><span>SipariÅŸ No</span><strong>{order.order_no}</strong></div>
                     <div><span>Tarih</span><strong>{formatDate(order.created_at)}</strong></div>
                     <div><span>Durum</span><strong className="order-status">{order.status}</strong></div>
                     <div><span>Toplam</span><strong>{formatPrice(order.total)}</strong></div>
@@ -1173,7 +1173,7 @@ export function CustomerAccountPage() {
                   {(order.tracking_code || order.cancel_reason) && (
                     <div className="account-order-meta">
                       {order.tracking_code && <div><span>Kargo takip kodu</span><strong>{order.tracking_code}</strong></div>}
-                      {order.cancel_reason && <div><span>İptal sebebi</span><strong>{order.cancel_reason}</strong></div>}
+                      {order.cancel_reason && <div><span>Ä°ptal sebebi</span><strong>{order.cancel_reason}</strong></div>}
                     </div>
                   )}
                   <div className="account-order-items">
@@ -1182,7 +1182,7 @@ export function CustomerAccountPage() {
                         <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
                         <span>
                           <strong>{item.name}</strong>
-                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" · ")}</small>
+                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" Â· ")}</small>
                         </span>
                       </Link>
                     ))}
@@ -1193,7 +1193,7 @@ export function CustomerAccountPage() {
           ) : (
             <div className="account-empty">
               <ShoppingBag size={35} strokeWidth={1.4} />
-              <p>Henüz sipariş verilmedi. <Link to="/kategori/new-drop">Ürünlere göz at</Link></p>
+              <p>HenÃ¼z sipariÅŸ verilmedi. <Link to="/kategori/new-drop">ÃœrÃ¼nlere gÃ¶z at</Link></p>
             </div>
           )
         )}
@@ -1203,22 +1203,24 @@ export function CustomerAccountPage() {
             <form className="account-settings-card" onSubmit={saveProfile}>
               <div className="account-card-title">
                 <div>
-                  <h2>Kişisel bilgiler</h2>
-                  <p>Hesabınızda kullanılan ad, e-posta ve telefon bilgilerini yönetin.</p>
+                  <h2>KiÅŸisel bilgiler</h2>
+                  <p>HesabÄ±nÄ±zda kullanÄ±lan ad, e-posta ve telefon bilgilerini yÃ¶netin.</p>
                 </div>
-                <span className={customer.email_verified ? "verification-badge verified" : "verification-badge"}>
-                  {customer.email_verified ? <><Check size={14} /> E-posta doğrulandı</> : "E-posta doğrulanmadı"}
-                </span>
+                <div className="verification-badges">
+                  <span className={customer.email_verified ? "verification-badge verified" : "verification-badge"}>
+                    {customer.email_verified ? <><Check size={14} /> E-posta doğrulandı</> : "E-posta doğrulanmadı"}
+                  </span>
+                </div>
               </div>
               {profileError && <div className="form-error">{profileError}</div>}
               {profileMessage && <div className="form-success">{profileMessage}</div>}
               <div className="account-form-grid">
                 <label>Ad soyad<input value={profile.name} onChange={(event) => setProfile({ ...profile, name: event.target.value })} required /></label>
-                <label>Telefon<input type="tel" value={profile.phone} onChange={(event) => setProfile({ ...profile, phone: event.target.value })} placeholder="+90 5xx xxx xx xx" /></label>
+                <label>Telefon<input type="tel" value={profile.phone} onChange={(event) => setProfile({ ...profile, phone: event.target.value })} placeholder="+90 5xx xxx xx xx" required /></label>
                 <label className="wide">E-posta<input type="email" value={profile.email} onChange={(event) => setProfile({ ...profile, email: event.target.value })} required /></label>
               </div>
               <button className="button dark" disabled={profileSaving}>
-                {profileSaving ? "KAYDEDİLİYOR..." : "BİLGİLERİ KAYDET"}
+                {profileSaving ? "KAYDEDÄ°LÄ°YOR..." : "BÄ°LGÄ°LERÄ° KAYDET"}
               </button>
             </form>
 
@@ -1226,14 +1228,14 @@ export function CustomerAccountPage() {
               <form className="account-settings-card verification-card" onSubmit={confirmEmail}>
                 <div className="account-card-title">
                   <div>
-                    <h2>E-posta doğrulama</h2>
-                    <p>{customer.email} adresine gönderilen 6 haneli kodu girin.</p>
+                    <h2>E-posta doÄŸrulama</h2>
+                    <p>{customer.email} adresine gÃ¶nderilen 6 haneli kodu girin.</p>
                   </div>
                   <ShieldCheck size={24} strokeWidth={1.5} />
                 </div>
                 {verificationError && <div className="form-error">{verificationError}</div>}
                 {verificationMessage && <div className="form-success">{verificationMessage}</div>}
-                {developmentCode && <div className="development-code">Yerel doğrulama kodu: <strong>{developmentCode}</strong></div>}
+                {developmentCode && <div className="development-code">Yerel doÄŸrulama kodu: <strong>{developmentCode}</strong></div>}
                 <div className="verification-row">
                   <input
                     inputMode="numeric"
@@ -1243,37 +1245,36 @@ export function CustomerAccountPage() {
                     placeholder="6 haneli kod"
                     required
                   />
-                  <button className="button dark">DOĞRULA</button>
+                  <button className="button dark">DOÄRULA</button>
                   <button type="button" className="text-action" onClick={() => sendVerificationCode()}>
-                    Kodu tekrar gönder
+                    Kodu tekrar gÃ¶nder
                   </button>
                 </div>
               </form>
             )}
-
             <form className="account-settings-card" onSubmit={changePassword}>
               <div className="account-card-title">
                 <div>
-                  <h2>Şifre değiştir</h2>
-                  <p>Mevcut şifrenizi veya e-postanıza gelen doğrulama kodunu kullanın.</p>
+                  <h2>Åifre deÄŸiÅŸtir</h2>
+                  <p>Mevcut ÅŸifrenizi veya e-postanÄ±za gelen doÄŸrulama kodunu kullanÄ±n.</p>
                 </div>
                 <LockKeyhole size={24} strokeWidth={1.5} />
               </div>
               {passwordError && <div className="form-error">{passwordError}</div>}
               {passwordMessage && <div className="form-success">{passwordMessage}</div>}
-              {passwordDevelopmentCode && <div className="development-code">Yerel şifre kodu: <strong>{passwordDevelopmentCode}</strong></div>}
+              {passwordDevelopmentCode && <div className="development-code">Yerel ÅŸifre kodu: <strong>{passwordDevelopmentCode}</strong></div>}
               <div className="account-form-grid">
-                <label>Mevcut şifre<input type="password" value={passwordForm.currentPassword} onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })} autoComplete="current-password" /></label>
+                <label>Mevcut ÅŸifre<input type="password" value={passwordForm.currentPassword} onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })} autoComplete="current-password" /></label>
                 <label>Ya da e-posta kodu<input inputMode="numeric" maxLength="6" value={passwordForm.verificationCode} onChange={(event) => setPasswordForm({ ...passwordForm, verificationCode: event.target.value.replace(/\D/g, "") })} /></label>
-                <label>Yeni şifre<input type="password" minLength="8" value={passwordForm.newPassword} onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })} autoComplete="new-password" required /></label>
-                <label>Yeni şifre tekrar<input type="password" minLength="8" value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })} autoComplete="new-password" required /></label>
+                <label>Yeni ÅŸifre<input type="password" minLength="8" value={passwordForm.newPassword} onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })} autoComplete="new-password" required /></label>
+                <label>Yeni ÅŸifre tekrar<input type="password" minLength="8" value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })} autoComplete="new-password" required /></label>
               </div>
               <div className="account-form-actions">
                 <button className="button dark" disabled={passwordSaving}>
-                  {passwordSaving ? "GÜNCELLENİYOR..." : "ŞİFREYİ GÜNCELLE"}
+                  {passwordSaving ? "GÃœNCELLENÄ°YOR..." : "ÅÄ°FREYÄ° GÃœNCELLE"}
                 </button>
                 <button type="button" className="text-action" onClick={() => sendVerificationCode("password_change")}>
-                  E-postama kod gönder
+                  E-postama kod gÃ¶nder
                 </button>
               </div>
             </form>
@@ -1283,7 +1284,7 @@ export function CustomerAccountPage() {
         {activeSection === "addresses" && (
           <div className="account-empty">
             <MapPin size={35} strokeWidth={1.4} />
-            <p>Henüz kayıtlı adresiniz yok. Sipariş sırasında girdiğiniz adresi kullanabilirsiniz.</p>
+            <p>HenÃ¼z kayÄ±tlÄ± adresiniz yok. SipariÅŸ sÄ±rasÄ±nda girdiÄŸiniz adresi kullanabilirsiniz.</p>
           </div>
         )}
 
@@ -1295,7 +1296,7 @@ export function CustomerAccountPage() {
           ) : (
             <div className="account-empty">
               <Heart size={35} strokeWidth={1.4} />
-              <p>Henüz beğendiğiniz bir ürün yok. <Link to="/kategori/new-drop">Yeni ürünleri keşfedin</Link></p>
+              <p>HenÃ¼z beÄŸendiÄŸiniz bir Ã¼rÃ¼n yok. <Link to="/kategori/new-drop">Yeni Ã¼rÃ¼nleri keÅŸfedin</Link></p>
             </div>
           )
         )}
@@ -1305,9 +1306,12 @@ export function CustomerAccountPage() {
 }
 
 export function NotFound() {
-  return <div className="empty-state"><h1>Sayfa bulunamadı.</h1><Link to="/">Anasayfaya dön</Link></div>;
+  return <div className="empty-state"><h1>Sayfa bulunamadÄ±.</h1><Link to="/">Anasayfaya dÃ¶n</Link></div>;
 }
 
 function Loading() {
   return <div className="loading"><span /><span /><span /></div>;
 }
+
+
+

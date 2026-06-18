@@ -2193,6 +2193,14 @@ img {
   font-weight: 700;
 }
 
+.verification-badges {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .verification-badge.verified {
   display: inline-flex;
   align-items: center;
