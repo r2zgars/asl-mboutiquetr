@@ -243,6 +243,70 @@ function optionList(value) {
     .filter(Boolean);
 }
 
+const maxUploadBytes = 3.5 * 1024 * 1024;
+const maxImageSide = 1800;
+
+function blobToCanvasBlob(canvas, type, quality) {
+  return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+}
+
+function loadImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const url = URL.createObjectURL(file);
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Görsel okunamadı. Farklı bir fotoğraf deneyin."));
+    };
+    image.src = url;
+  });
+}
+
+async function prepareImageFile(file) {
+  if (!file.type.startsWith("image/")) throw new Error("Lütfen geçerli bir görsel seçin.");
+  if (file.type === "image/gif") {
+    if (file.size > maxUploadBytes) throw new Error("GIF dosyası çok büyük. Daha küçük bir görsel seçin.");
+    return file;
+  }
+
+  const image = await loadImageFile(file);
+  const scale = Math.min(1, maxImageSide / Math.max(image.width, image.height));
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+  if (file.size <= maxUploadBytes && scale === 1) return file;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0, width, height);
+
+  let bestBlob = null;
+  for (const quality of [0.84, 0.74, 0.64, 0.54]) {
+    const blob = await blobToCanvasBlob(canvas, "image/webp", quality);
+    if (!blob) continue;
+    bestBlob = blob;
+    if (blob.size <= maxUploadBytes) break;
+  }
+  if (!bestBlob || bestBlob.size > maxUploadBytes) {
+    throw new Error("Görsel çok büyük. Fotoğrafı biraz kırpıp tekrar deneyin.");
+  }
+
+  const name = file.name.replace(/\.[^.]+$/, "") || "gorsel";
+  return new File([bestBlob], `${name}.webp`, { type: bestBlob.type || "image/webp" });
+}
+
+async function imageFormData(file) {
+  const prepared = await prepareImageFile(file);
+  const body = new FormData();
+  body.append("image", prepared);
+  return body;
+}
+
 function ProductModal({ product, categories, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: product?.name || "",
@@ -273,11 +337,12 @@ function ProductModal({ product, categories, onClose, onSaved }) {
 
   async function uploadImage(event) {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
     setUploading(true);
-    const body = new FormData();
-    body.append("image", file);
+    setError("");
     try {
+      const body = await imageFormData(file);
       const result = await api("/api/admin/upload", { method: "POST", body });
       setForm((current) => ({ ...current, images: [...current.images, result.url] }));
     } catch (uploadError) {
@@ -296,9 +361,9 @@ function ProductModal({ product, categories, onClose, onSaved }) {
       return;
     }
     setUploading(true);
-    const body = new FormData();
-    body.append("image", file);
+    setError("");
     try {
+      const body = await imageFormData(file);
       const result = await api("/api/admin/upload", { method: "POST", body });
       setForm((current) => {
         const existing = current.variantImages.find(
@@ -453,10 +518,11 @@ function CategoryModal({ category, onClose, onSaved }) {
 
   async function uploadImage(event) {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
-    const body = new FormData();
-    body.append("image", file);
+    setError("");
     try {
+      const body = await imageFormData(file);
       const result = await api("/api/admin/upload", { method: "POST", body });
       setForm({ ...form, image: result.url });
     } catch (uploadError) {
@@ -744,10 +810,11 @@ export function AdminSettings() {
 
   async function upload(event, field) {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
-    const body = new FormData();
-    body.append("image", file);
+    setError("");
     try {
+      const body = await imageFormData(file);
       const result = await api("/api/admin/upload", { method: "POST", body });
       if (field === "heroImages") {
         setForm({ ...form, heroImages: [...(form.heroImages || []), result.url] });

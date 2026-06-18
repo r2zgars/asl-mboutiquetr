@@ -8,8 +8,20 @@ export async function api(path, options = {}) {
     ...options
   });
 
-  const data = response.status === 204 ? null : await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data?.message || "İşlem tamamlanamadı.");
+  const text = response.status === 204 ? "" : await response.text().catch(() => "");
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const fallback = response.status === 413
+      ? "Görsel çok büyük. Daha küçük bir fotoğraf deneyin."
+      : text || "İşlem tamamlanamadı.";
+    throw new Error(data?.message || fallback);
+  }
   return data;
 }
 
