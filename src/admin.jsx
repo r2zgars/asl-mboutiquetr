@@ -430,6 +430,7 @@ function ProductModal({ product, categories, onClose, onSaved }) {
           <label>Stok<input type="number" min="0" name="stock" value={form.stock} onChange={update} /></label>
           <label>Satış fiyatı<input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} required /></label>
           <label>İndirim öncesi fiyat<input type="number" min="0" step="0.01" name="comparePrice" value={form.comparePrice} onChange={update} /></label>
+          <label className="wide">Satın al linki<input type="url" name="purchaseUrl" value={form.purchaseUrl} onChange={update} placeholder="https://..." /></label>
           <label className="wide">Açıklama<textarea name="description" rows="4" value={form.description} onChange={update} /></label>
           <label>Bedenler<input value={Array.isArray(form.sizes) ? form.sizes.join(", ") : form.sizes} onChange={(event) => setForm({ ...form, sizes: event.target.value })} placeholder="S, M, L" /></label>
           <label>Renkler<input value={Array.isArray(form.colors) ? form.colors.join(", ") : form.colors} onChange={(event) => setForm({ ...form, colors: event.target.value })} placeholder="Siyah, Ekru" /></label>
