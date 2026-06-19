@@ -11,7 +11,7 @@ const supabase = supabaseUrl && serviceRoleKey
   : null;
 
 const productSelect = "*, categories(name, slug)";
-const cancelledStatus = "Ä°ptal";
+const cancelledStatus = "İptal";
 
 export function isDatabaseConfigured() {
   return Boolean(supabase);
@@ -19,7 +19,7 @@ export function isDatabaseConfigured() {
 
 function client() {
   if (!supabase) {
-    throw new Error("Supabase baÄŸlantÄ±sÄ± tanÄ±mlÄ± deÄŸil. SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ekleyin.");
+    throw new Error("Supabase bağlantısı tanımlı değil. SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ekleyin.");
   }
   return supabase;
 }
@@ -286,7 +286,7 @@ export async function uniqueSlug(table, desired, currentId = null) {
 
 export async function normalizeProductBody(body, currentId = null) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("ÃœrÃ¼n adÄ± zorunludur.");
+  if (!name) throw new Error("Ürün adı zorunludur.");
 
   return {
     categoryId: body.categoryId ? Number(body.categoryId) : null,
@@ -452,7 +452,7 @@ export async function listAdminCategories() {
 
 export async function createCategory(body) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("Kategori adÄ± zorunludur.");
+  if (!name) throw new Error("Kategori adı zorunludur.");
   const slug = await uniqueSlug("categories", body.slug || name);
   const { data } = await run(
     client()
@@ -473,7 +473,7 @@ export async function createCategory(body) {
 
 export async function updateCategory(id, body) {
   const name = String(body.name || "").trim();
-  if (!name) throw new Error("Kategori adÄ± zorunludur.");
+  if (!name) throw new Error("Kategori adı zorunludur.");
   const slug = await uniqueSlug("categories", body.slug || name, id);
   const { data } = await run(
     client()

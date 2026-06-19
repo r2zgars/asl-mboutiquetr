@@ -166,12 +166,12 @@ export function slugify(value) {
   return String(value || "")
     .trim()
     .toLocaleLowerCase("tr-TR")
-    .replaceAll("Ä±", "i")
-    .replaceAll("ÄŸ", "g")
-    .replaceAll("Ã¼", "u")
-    .replaceAll("ÅŸ", "s")
-    .replaceAll("Ã¶", "o")
-    .replaceAll("Ã§", "c")
+    .replaceAll("ı", "i")
+    .replaceAll("ğ", "g")
+    .replaceAll("ü", "u")
+    .replaceAll("ş", "s")
+    .replaceAll("ö", "o")
+    .replaceAll("ç", "c")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
@@ -220,7 +220,7 @@ function seed() {
   if (!db.prepare("SELECT COUNT(*) AS count FROM users").get().count) {
     db.prepare("INSERT INTO users (email, name, password_hash, role) VALUES (?, ?, ?, 'admin')").run(
       "aslimboutique@gmail.com",
-      "AslÄ±m YÃ¶netici",
+      "Aslım Yönetici",
       hashPassword("iremtetik2346")
     );
   }
@@ -228,22 +228,22 @@ function seed() {
   if (!db.prepare("SELECT COUNT(*) AS count FROM settings").get().count) {
     const defaults = {
       storeName: "ASLIM BOUTIQUE",
-      announcement: "AÃ‡ILIÅA Ã–ZEL Ä°NDÄ°RÄ°M",
-      announcements: ["AÃ‡ILIÅA Ã–ZEL Ä°NDÄ°RÄ°M"],
+      announcement: "AÇILIŞA ÖZEL İNDİRİM",
+      announcements: ["AÇILIŞA ÖZEL İNDİRİM"],
       logo: "/images/logo.webp",
       heroTitle: "Zarafetin yeni hali",
-      heroSubtitle: "GÃ¼nÃ¼n her anÄ±na eÅŸlik eden seÃ§kin parÃ§alarÄ± keÅŸfedin.",
-      heroButton: "KOLEKSÄ°YONU KEÅFET",
+      heroSubtitle: "Günün her anına eşlik eden seçkin parçaları keşfedin.",
+      heroButton: "KOLEKSİYONU KEŞFET",
       heroImages: ["/images/hero-scarf.webp", "/images/hero-vest.webp", "/images/hero-bag.webp"],
       phone: "+90 555 555 55 55",
       email: "info@aslimboutique.com",
       instagram: "https://instagram.com/aslimboutiquetr",
       whatsapp: "905555555555",
-      address: "Ä°stanbul, TÃ¼rkiye",
+      address: "İstanbul, Türkiye",
       shippingFee: 89.9,
       freeShippingThreshold: 1500,
       returnDays: 15,
-      footerNote: "Ã–zenle seÃ§ilmiÅŸ zamansÄ±z parÃ§alar.",
+      footerNote: "Özenle seçilmiş zamansız parçalar.",
       primaryColor: "#0a0a0a",
       accentColor: "#a4743b"
     };
@@ -251,7 +251,7 @@ function seed() {
     for (const [key, value] of Object.entries(defaults)) statement.run(key, JSON.stringify(value));
   }
 
-  const existingAnnouncement = getSettings().announcement || "AÃ‡ILIÅA Ã–ZEL Ä°NDÄ°RÄ°M";
+  const existingAnnouncement = getSettings().announcement || "AÇILIŞA ÖZEL İNDİRİM";
   db.prepare(`
     INSERT INTO settings (key, value) VALUES ('announcements', ?)
     ON CONFLICT(key) DO NOTHING
@@ -259,13 +259,13 @@ function seed() {
 
   if (!db.prepare("SELECT COUNT(*) AS count FROM categories").get().count) {
     const categories = [
-      ["NEW DROP", "new-drop", "En yeni seÃ§kimiz", "/images/hero-scarf.webp", 1],
-      ["ÃœST GÄ°YÄ°M", "ust-giyim", "Yelek, gÃ¶mlek ve tunikler", "/images/vest.webp", 2],
-      ["ALT GÄ°YÄ°M", "alt-giyim", "Rahat ve zamansÄ±z alt giyim", "/images/hero-vest.webp", 3],
-      ["AKSESUAR", "aksesuar", "GÃ¶rÃ¼nÃ¼mÃ¼nÃ¼zÃ¼ tamamlayan detaylar", "/images/bag-white.webp", 4],
-      ["Ã‡ANTA", "canta", "GÃ¼nlÃ¼k ve Ã¶zel Ã§anta seÃ§kisi", "/images/bag-navy.webp", 5],
-      ["ÅAL", "sal", "YumuÅŸak dokulu ÅŸal koleksiyonu", "/images/hero-scarf.webp", 6],
-      ["TAKIM", "takim", "Birlikte kusursuz duran takÄ±mlar", "/images/hero-vest.webp", 7]
+      ["NEW DROP", "new-drop", "En yeni seçkimiz", "/images/hero-scarf.webp", 1],
+      ["ÜST GİYİM", "ust-giyim", "Yelek, gömlek ve tunikler", "/images/vest.webp", 2],
+      ["ALT GİYİM", "alt-giyim", "Rahat ve zamansız alt giyim", "/images/hero-vest.webp", 3],
+      ["AKSESUAR", "aksesuar", "Görünümünüzü tamamlayan detaylar", "/images/bag-white.webp", 4],
+      ["ÇANTA", "canta", "Günlük ve özel çanta seçkisi", "/images/bag-navy.webp", 5],
+      ["ŞAL", "sal", "Yumuşak dokulu şal koleksiyonu", "/images/hero-scarf.webp", 6],
+      ["TAKIM", "takim", "Birlikte kusursuz duran takımlar", "/images/hero-vest.webp", 7]
     ];
     const statement = db.prepare(
       "INSERT INTO categories (name, slug, description, image, sort_order) VALUES (?, ?, ?, ?, ?)"
@@ -278,62 +278,62 @@ function seed() {
     const products = [
       {
         category: "ust-giyim",
-        name: "Kruvaze TokalÄ± Yelek",
+        name: "Kruvaze Tokalı Yelek",
         price: 1299.9,
         comparePrice: 1599.9,
         stock: 14,
         image: "/images/vest.webp",
         sizes: ["S", "M", "L"],
         colors: ["Bordo", "Siyah"],
-        description: "Modern kruvaze kesimi ve metal toka detayÄ±yla zamansÄ±z bir katman.",
+        description: "Modern kruvaze kesimi ve metal toka detayıyla zamansız bir katman.",
         featured: 1
       },
       {
         category: "canta",
-        name: "Doku DetaylÄ± Beyaz Ã‡anta",
+        name: "Doku Detaylı Beyaz Çanta",
         price: 1149.9,
         comparePrice: null,
         stock: 9,
         image: "/images/bag-white.webp",
         sizes: ["Standart"],
-        colors: ["KÄ±rÄ±k Beyaz"],
-        description: "GeniÅŸ iÃ§ hacmi, zarif dokusu ve Ã§Ä±karÄ±labilir aksesuar Ã§antasÄ±yla gÃ¼nlÃ¼k kullanÄ±m iÃ§in ideal.",
+        colors: ["Kırık Beyaz"],
+        description: "Geniş iç hacmi, zarif dokusu ve çıkarılabilir aksesuar çantasıyla günlük kullanım için ideal.",
         featured: 1
       },
       {
         category: "canta",
-        name: "Lacivert Åehir Ã‡antasÄ±",
+        name: "Lacivert Şehir Çantası",
         price: 1399.9,
         comparePrice: 1699.9,
         stock: 7,
         image: "/images/bag-navy.webp",
         sizes: ["Standart"],
         colors: ["Lacivert"],
-        description: "GÃ¼Ã§lÃ¼ formu ve ayarlanabilir askÄ±sÄ±yla ÅŸehir temposuna uyum saÄŸlar.",
+        description: "Güçlü formu ve ayarlanabilir askısıyla şehir temposuna uyum sağlar.",
         featured: 1
       },
       {
         category: "sal",
-        name: "Monokrom Ã‡iÃ§ek Åal",
+        name: "Monokrom Çiçek Şal",
         price: 449.9,
         comparePrice: null,
         stock: 21,
         image: "/images/hero-scarf.webp",
         sizes: ["Standart"],
         colors: ["Siyah"],
-        description: "AkÄ±ÅŸkan dokusu ve bÃ¼yÃ¼k Ã§iÃ§ek deseniyle sade kombinlere gÃ¼Ã§lÃ¼ bir dokunuÅŸ.",
+        description: "Akışkan dokusu ve büyük çiçek deseniyle sade kombinlere güçlü bir dokunuş.",
         featured: 1
       },
       {
         category: "takim",
-        name: "Keten Dokulu Ä°kili TakÄ±m",
+        name: "Keten Dokulu İkili Takım",
         price: 2199.9,
         comparePrice: 2599.9,
         stock: 11,
         image: "/images/hero-vest.webp",
         sizes: ["S", "M", "L", "XL"],
-        colors: ["TaÅŸ", "Kum"],
-        description: "Rahat kalÄ±bÄ± ve doÄŸal renk paletiyle gÃ¼n boyu zahmetsiz ÅŸÄ±klÄ±k.",
+        colors: ["Taş", "Kum"],
+        description: "Rahat kalıbı ve doğal renk paletiyle gün boyu zahmetsiz şıklık.",
         featured: 1
       },
       {
@@ -345,7 +345,7 @@ function seed() {
         image: "/images/vest.webp",
         sizes: ["S", "M", "L"],
         colors: ["Bordo", "Ekru"],
-        description: "Minimal Ã§izgileri yumuÅŸak bir asimetriyle buluÅŸturan yeni sezon bluz.",
+        description: "Minimal çizgileri yumuşak bir asimetriyle buluşturan yeni sezon bluz.",
         featured: 0
       }
     ];
