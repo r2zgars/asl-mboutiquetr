@@ -1719,40 +1719,6 @@ img {
   font-size: 11px;
 }
 
-.paytr-page {
-  min-height: 680px;
-  padding: 64px min(6vw, 90px);
-  background: var(--paper);
-}
-
-.paytr-head {
-  max-width: 980px;
-  margin: 0 auto 24px;
-  text-align: center;
-}
-
-.paytr-head h1 {
-  margin: 0 0 10px;
-  font-family: Georgia, serif;
-  font-size: clamp(38px, 5vw, 62px);
-  font-weight: 400;
-}
-
-.paytr-head p:not(.eyebrow) {
-  margin: 0;
-  color: #666;
-}
-
-.paytr-iframe {
-  width: min(980px, 100%);
-  min-height: 760px;
-  margin: 0 auto;
-  display: block;
-  border: 0;
-  border-radius: 8px;
-  background: white;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-}
 
 .success-check.failed {
   background: #fff0ee;
@@ -4138,16 +4104,7 @@ img {
     width: 100%;
   }
 
-  .paytr-page {
-    min-height: calc(100dvh - 150px);
-    padding: 38px 12px 70px;
-  }
-
-  .paytr-iframe {
-    min-height: 720px;
-    border-radius: 6px;
-  }
-
+  
   .admin-login {
     display: block;
     padding: 90px 18px 30px;

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,9 +13,7 @@ import {
   MapPin,
   MessageCircle,
   Menu,
-  Minus,
   PackageCheck,
-  Plus,
   Search,
   ShieldCheck,
   ShoppingBag,
@@ -24,7 +22,6 @@ import {
   X
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { getCities, getDistrictsByCityCode } from "turkey-neighbourhoods";
 import { api, formatDate, formatPrice, getVariantImages } from "./api";
 import { useStore } from "./store";
 
@@ -72,6 +69,16 @@ function whatsappUrl(settings, message = "Merhaba, mağazanız hakkında bilgi a
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+function productPath(product) {
+  if (!product) return "/";
+  return product.category_slug ? `/kategori/${product.category_slug}/${product.slug}` : `/urun/${product.slug}`;
+}
+
+function productWhatsappMessage(product) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://aslimboutique.vercel.app";
+  return `${origin}${productPath(product)} Ürünü hakkında bilgi almak istiyorum.`;
+}
+
 function AnnouncementBar({ settings }) {
   const configured = Array.isArray(settings.announcements) ? settings.announcements.filter(Boolean) : [];
   const messages = configured.length ? configured : [settings.announcement || "AÇILIŞA ÖZEL İNDİRİM"];
@@ -88,19 +95,24 @@ function AnnouncementBar({ settings }) {
 }
 
 function MobileAppNav() {
-  const { cartCount, customer } = useStore();
+  const { customer } = useStore();
   const location = useLocation();
   const links = [
     { to: "/", label: "Ana Sayfa", icon: Home },
     { to: "/kategori/new-drop", label: "New Drop", icon: LayoutGrid },
-    { to: "/sepet", label: "Sepetim", icon: ShoppingBag, badge: cartCount },
+    { to: customer ? "/hesabim?bolum=favorites" : "/giris", label: "Favoriler", icon: Heart },
     { to: customer ? "/hesabim" : "/giris", label: "Hesabım", icon: UserRound }
   ];
 
   return (
     <nav className="mobile-app-nav" aria-label="Mobil hızlı menü">
       {links.map(({ to, label, icon: Icon, badge }) => {
-        const active = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+        const targetPath = to.split("?")[0];
+        const active = label === "Favoriler"
+          ? location.pathname === "/hesabim" && location.search.includes("favorites")
+          : targetPath === "/"
+            ? location.pathname === "/"
+            : location.pathname.startsWith(targetPath) && label !== "Favoriler";
         return (
           <Link key={label} to={to} className={active ? "active" : ""} onClick={scrollPageTop}>
             <span className="mobile-nav-icon">
@@ -116,7 +128,7 @@ function MobileAppNav() {
 }
 
 function Header() {
-  const { settings, categories, cart, cartCount, subtotal, customer, adminAuthenticated } = useStore();
+  const { settings, categories, customer, adminAuthenticated } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -153,38 +165,6 @@ function Header() {
           <Link className="icon-button desktop-only" to={customer ? "/hesabim" : "/giris"} aria-label={customer ? "Hesabım" : "Giriş yap"} onClick={scrollPageTop}>
             <UserRound size={23} />
           </Link>
-          <div className="cart-hover-wrap">
-            <Link className="icon-button cart-button" to="/sepet" aria-label="Sepet" onClick={scrollPageTop}>
-              <ShoppingBag size={23} />
-              {cartCount > 0 && <span>{cartCount}</span>}
-            </Link>
-            <div className="cart-preview">
-              <div className="cart-preview-head">
-                <strong>Sepetim</strong>
-                <span>{cartCount} ürün</span>
-              </div>
-              {cart.length ? (
-                <>
-                  <div className="cart-preview-items">
-                    {cart.slice(0, 4).map((item) => (
-                      <Link to={`/urun/${item.slug}`} key={item.key}>
-                        <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
-                        <span>
-                          <strong>{item.name}</strong>
-                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" · ")}</small>
-                        </span>
-                        <b>{formatPrice(item.price * item.quantity)}</b>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="cart-preview-total"><span>Ara toplam</span><strong>{formatPrice(subtotal)}</strong></div>
-                  <Link className="button dark full" to="/sepet">SEPETE GİT</Link>
-                </>
-              ) : (
-                <div className="cart-preview-empty">Sepetiniz henüz boş.</div>
-              )}
-            </div>
-          </div>
         </div>
       </header>
 
@@ -251,7 +231,6 @@ function Footer() {
           <h3>Yardım</h3>
           <a href={whatsappUrl(settings)} target="_blank" rel="noreferrer">İletişim</a>
           <Link to="/sss">Sıkça Sorulan Sorular</Link>
-          <Link to="/sepet">Sepetim</Link>
           {customer ? (
             <Link to="/hesabim">Hesabım</Link>
           ) : (
@@ -382,27 +361,12 @@ function FavoriteButton({ productId, className = "" }) {
 }
 
 export function ProductCard({ product }) {
-  const { addToCart } = useStore();
-  const [added, setAdded] = useState(false);
-  const addedTimer = useRef(null);
   const soldOut = product.stock <= 0;
-
-  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
-
-  function quickAdd(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (soldOut) return;
-
-    addToCart(product, { size: product.sizes?.[0], color: product.colors?.[0] });
-    setAdded(true);
-    window.clearTimeout(addedTimer.current);
-    addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
-  }
+  const path = productPath(product);
 
   return (
     <article className="product-card reveal">
-      <Link to={`/urun/${product.slug}`} className="product-image">
+      <Link to={path} className="product-image">
         <img src={product.images?.[0] || "/images/hero-scarf.webp"} alt={product.name} />
         {product.compare_price > product.price && (
           <span className="discount">-%{Math.round((1 - product.price / product.compare_price) * 100)}</span>
@@ -411,7 +375,7 @@ export function ProductCard({ product }) {
       </Link>
       <FavoriteButton productId={product.id} className="product-card-favorite" />
       <div className="product-card-body">
-        <Link to={`/urun/${product.slug}`}>
+        <Link to={path}>
           <p className="product-category">{product.category_name}</p>
           <h3>{product.name}</h3>
         </Link>
@@ -419,15 +383,9 @@ export function ProductCard({ product }) {
           <strong>{formatPrice(product.price)}</strong>
           {product.compare_price > product.price && <del>{formatPrice(product.compare_price)}</del>}
         </div>
-        <button
-          type="button"
-          className={`quick-add ${added ? "added" : ""}`}
-          disabled={soldOut}
-          onClick={quickAdd}
-          aria-live="polite"
-        >
-          {soldOut ? "STOKTA YOK" : added ? <><Check size={14} /> EKLENDİ</> : "SEPETE EKLE"}
-        </button>
+        <Link className={`quick-add ${soldOut ? "disabled" : ""}`} to={path}>
+          {soldOut ? "STOKTA YOK" : "ÜRÜNÜ İNCELE"}
+        </Link>
       </div>
     </article>
   );
@@ -502,31 +460,23 @@ export function SearchPage() {
 }
 
 export function ProductPage() {
-  const { slug } = useParams();
-  const { products, loading, addToCart } = useStore();
-  const product = products.find((item) => item.slug === slug);
+  const { slug, productSlug } = useParams();
+  const { products, loading, settings } = useStore();
+  const product = products.find((item) => item.slug === (productSlug || slug));
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
-  const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
   const galleryImages = getVariantImages(product, color, size);
 
   useEffect(() => {
     if (product) {
       setSize(product.sizes?.[0] || "");
       setColor(product.colors?.[0] || "");
-      setQuantity(1);
     }
   }, [product]);
 
   if (loading) return <Loading />;
   if (!product) return <NotFound />;
-
-  function add() {
-    addToCart(product, { size, color, quantity });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  }
+  const buyHref = whatsappUrl(settings, productWhatsappMessage(product));
 
   return (
     <div className="product-page reveal">
@@ -563,14 +513,13 @@ export function ProductPage() {
           </div>
         )}
         <div className="purchase-row">
-          <div className="quantity">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus size={16} /></button>
-            <span>{quantity}</span>
-            <button onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}><Plus size={16} /></button>
-          </div>
-          <button className="button dark add-button" onClick={add} disabled={product.stock <= 0}>
-            {added ? <><Check size={19} /> EKLENDİ</> : product.stock > 0 ? "SEPETE EKLE" : "STOKTA YOK"}
-          </button>
+          {product.stock > 0 ? (
+            <a className="button dark add-button" href={buyHref} target="_blank" rel="noreferrer">
+              SATIN AL
+            </a>
+          ) : (
+            <button className="button dark add-button" disabled>STOKTA YOK</button>
+          )}
         </div>
         <div className="stock-note">{product.stock > 0 ? `Stokta ${product.stock} adet` : "Stokta yok"}</div>
         <div className="product-description">
@@ -580,295 +529,9 @@ export function ProductPage() {
         </div>
         <div className="product-benefits">
           <div><Truck /><span><strong>Hızlı gönderim</strong>1-3 iş günü içinde kargoda</span></div>
-          <div><LockKeyhole /><span><strong>Güvenli ödeme</strong>Bilgileriniz koruma altında</span></div>
+          <div><MessageCircle /><span><strong>WhatsApp ile satın alma</strong>Ürün linki mesajınıza otomatik eklenir</span></div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export function CartPage() {
-  const { cart, subtotal, shipping, total, updateQuantity, removeFromCart, settings } = useStore();
-  if (!cart.length) {
-    return <div className="empty-state cart-empty"><ShoppingBag /><h1>Sepetiniz boş.</h1><p>Yeni koleksiyonu keşfetmeye ne dersiniz?</p><Link className="button dark" to="/">ALIŞVERİŞE BAŞLA</Link></div>;
-  }
-  const remaining = Math.max(0, Number(settings.freeShippingThreshold || 0) - subtotal);
-  return (
-    <div className="cart-page">
-      <h1>Sepetim <span>({cart.length})</span></h1>
-      <div className="cart-layout">
-        <section className="cart-items">
-          {remaining > 0 ? (
-            <div className="shipping-progress">
-              Ücretsiz kargo için <strong>{formatPrice(remaining)}</strong> daha ekleyin.
-              <div><span style={{ width: `${Math.min(100, (subtotal / settings.freeShippingThreshold) * 100)}%` }} /></div>
-            </div>
-          ) : <div className="shipping-progress success"><Check size={18} /> Ücretsiz kargo kazandınız.</div>}
-          {cart.map((item) => (
-            <article className="cart-item" key={item.key}>
-              <Link to={`/urun/${item.slug}`}><img src={item.image} alt={item.name} /></Link>
-              <div className="cart-item-info">
-                <Link to={`/urun/${item.slug}`}><h2>{item.name}</h2></Link>
-                <p>{[item.color, item.size].filter(Boolean).join(" · ")}</p>
-                <strong>{formatPrice(item.price)}</strong>
-                <div className="quantity small">
-                  <button onClick={() => updateQuantity(item.key, item.quantity - 1)}><Minus size={14} /></button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.key, item.quantity + 1)}><Plus size={14} /></button>
-                </div>
-              </div>
-              <button className="remove-item" onClick={() => removeFromCart(item.key)}><X size={18} /></button>
-            </article>
-          ))}
-        </section>
-        <OrderSummary subtotal={subtotal} shipping={shipping} total={total}>
-          <Link className="button dark full" to="/odeme">SİPARİŞİ TAMAMLA</Link>
-        </OrderSummary>
-      </div>
-    </div>
-  );
-}
-
-function OrderSummary({ subtotal, shipping, total, children }) {
-  return (
-    <aside className="order-summary">
-      <h2>Sipariş özeti</h2>
-      <div><span>Ara toplam</span><strong>{formatPrice(subtotal)}</strong></div>
-      <div><span>Kargo</span><strong>{shipping ? formatPrice(shipping) : "Ücretsiz"}</strong></div>
-      <div className="summary-total"><span>Toplam</span><strong>{formatPrice(total)}</strong></div>
-      {children}
-      <p><LockKeyhole size={15} /> Güvenli ödeme altyapısı</p>
-    </aside>
-  );
-}
-
-export function CheckoutPage() {
-  const { cart, subtotal, shipping, total, clearCart, customer, authLoading } = useStore();
-  const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [paytrConfig, setPaytrConfig] = useState({ enabled: false, testMode: true });
-  const [form, setForm] = useState({
-    customerName: "", email: "", phone: "", address: "", city: "", district: "",
-    neighborhood: "", street: "", buildingNo: "", floor: "", apartmentNo: "",
-    postalCode: "", notes: "", paymentMethod: "PayTR"
-  });
-  const cities = useMemo(() => getCities(), []);
-  const selectedCity = cities.find((city) => city.name === form.city);
-  const districts = selectedCity ? getDistrictsByCityCode(selectedCity.code) : [];
-
-  useEffect(() => {
-    api("/api/paytr/config").then(setPaytrConfig).catch(() => setPaytrConfig({ enabled: false, testMode: true }));
-  }, []);
-
-  useEffect(() => {
-    if (!customer) return;
-    setForm((current) => ({
-      ...current,
-      customerName: current.customerName || customer.name,
-      email: current.email || customer.email,
-      phone: current.phone || customer.phone || ""
-    }));
-  }, [customer]);
-
-  if (!cart.length) return <div className="empty-state"><h1>Sepetiniz boş.</h1><Link to="/">Alışverişe dön</Link></div>;
-  if (authLoading) return <Loading />;
-  if (!customer) {
-    return (
-      <div className="checkout-account-gate">
-        <UserRound size={38} strokeWidth={1.4} />
-        <h1>Sipariş için hesabınıza giriş yapın.</h1>
-        <p>Sipariş güvenliği ve takibi için kayıtlı bir müşteri hesabı gereklidir.</p>
-        <div>
-          <Link className="button dark" to="/giris">GİRİŞ YAP</Link>
-          <Link className="button" to="/kayit-ol">KAYIT OL</Link>
-        </div>
-      </div>
-    );
-  }
-  if (!customer.email_verified) {
-    return (
-      <div className="checkout-account-gate">
-        <ShieldCheck size={38} strokeWidth={1.4} />
-        <h1>E-posta adresinizi doğrulayın.</h1>
-        <p>Siparişi tamamlamadan önce {customer.email} adresine gönderilen kodu girmeniz gerekiyor.</p>
-        <Link className="button dark" to="/hesabim?bolum=profile">ŞİMDİ DOĞRULA</Link>
-      </div>
-    );
-  }
-
-  function update(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
-  }
-
-  async function submit(event) {
-    event.preventDefault();
-    setSubmitting(true);
-    setError("");
-    try {
-      const result = await api("/api/orders", {
-        method: "POST",
-        body: JSON.stringify({
-          ...form,
-          items: cart.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color
-          }))
-        })
-      });
-      clearCart();
-      if (result.paytr?.iframeUrl) {
-        navigate(`/paytr-odeme/${result.orderNo}`, { state: { orderNo: result.orderNo, paytr: result.paytr } });
-        return;
-      }
-      navigate("/siparis-basarili", { state: result });
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div className="checkout-page">
-      <form className="checkout-form" onSubmit={submit}>
-        <p className="eyebrow">GÜVENLİ ÖDEME</p>
-        <h1>Teslimat bilgileri</h1>
-        {error && <div className="form-error">{error}</div>}
-        <div className="form-grid">
-          <label className="wide">Ad soyad<input name="customerName" value={form.customerName} onChange={update} required /></label>
-          <label>E-posta<input type="email" name="email" value={form.email} readOnly /></label>
-          <label>Telefon<input name="phone" value={form.phone} onChange={update} required /></label>
-          <label>İl
-            <select
-              name="city"
-              value={form.city}
-              onChange={(event) => setForm({ ...form, city: event.target.value, district: "" })}
-              required
-            >
-              <option value="">İl seçin</option>
-              {cities.map((city) => <option key={city.code} value={city.name}>{city.name}</option>)}
-            </select>
-          </label>
-          <label>İlçe
-            <select name="district" value={form.district} onChange={update} required disabled={!form.city}>
-              <option value="">İlçe seçin</option>
-              {districts.map((district) => <option key={district} value={district}>{district}</option>)}
-            </select>
-          </label>
-          <label>Mahalle<input name="neighborhood" value={form.neighborhood} onChange={update} required /></label>
-          <label>Cadde / Sokak<input name="street" value={form.street} onChange={update} required /></label>
-          <label>Bina no<input name="buildingNo" value={form.buildingNo} onChange={update} required /></label>
-          <label>Kat<input name="floor" value={form.floor} onChange={update} required /></label>
-          <label>Daire no<input name="apartmentNo" value={form.apartmentNo} onChange={update} required /></label>
-          <label>Posta kodu<input name="postalCode" value={form.postalCode} onChange={update} /></label>
-          <label className="wide">Adres tarifi<textarea name="address" value={form.address} onChange={update} rows="2" placeholder="Site adı, blok, kapı bilgisi veya tarif" /></label>
-          <label className="wide">Sipariş notu<textarea name="notes" value={form.notes} onChange={update} rows="2" /></label>
-        </div>
-        <h2>Ödeme yöntemi</h2>
-        <label className="payment-choice">
-          <input type="radio" name="paymentMethod" value="PayTR" checked readOnly />
-          <span><strong>Kart ile Ödeme</strong><small>PayTR güvenli ödeme ekranında kartınızla ödeyin.</small></span>
-        </label>
-        {!paytrConfig.enabled && (
-          <div className="form-error payment-unavailable">
-            Ödeme altyapısı hazırlanıyor. PayTR bilgileri tanımlanınca sipariş almaya hazır olacak.
-          </div>
-        )}
-        <button className="button dark full" disabled={submitting || !paytrConfig.enabled}>{submitting ? "ÖDEME EKRANI AÇILIYOR..." : `${formatPrice(total)} · ÖDEMEYE GEÇ`}</button>
-      </form>
-      <OrderSummary subtotal={subtotal} shipping={shipping} total={total}>
-        <div className="checkout-mini-items">
-          {cart.map((item) => <div key={item.key}><img src={item.image} alt="" /><span>{item.name}<small>{item.quantity} adet</small></span><strong>{formatPrice(item.price * item.quantity)}</strong></div>)}
-        </div>
-      </OrderSummary>
-    </div>
-  );
-}
-
-export function OrderSuccessPage() {
-  const location = useLocation();
-  const [params] = useSearchParams();
-  const result = location.state;
-  const paytrReturn = params.get("paytr") === "1";
-  return (
-    <div className="success-page">
-      <div className="success-check"><Check /></div>
-      <p className="eyebrow">SİPARİŞİNİZ ALINDI</p>
-      <h1>Teşekkür ederiz.</h1>
-      <p>{paytrReturn ? "Ödeme dönüşünüz alındı. Siparişinizin kesin durumu PayTR bildirimi geldikten sonra hesabınızda güncellenecek." : "Siparişiniz başarıyla oluşturuldu. Hazırlık sürecini yönetim panelinden takip edebilirsiniz."}</p>
-      {result && <div className="order-number"><span>Sipariş numarası</span><strong>{result.orderNo}</strong></div>}
-      <Link className="button dark" to="/">ANASAYFAYA DÖN</Link>
-    </div>
-  );
-}
-
-export function PaytrPaymentPage() {
-  const { orderNo } = useParams();
-  const location = useLocation();
-  const [paytr, setPaytr] = useState(location.state?.paytr || null);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (document.querySelector("script[data-paytr-resizer]")) return;
-    const script = document.createElement("script");
-    script.src = "https://www.paytr.com/js/iframeResizer.min.js";
-    script.async = true;
-    script.dataset.paytrResizer = "true";
-    document.body.appendChild(script);
-  }, []);
-
-  useEffect(() => {
-    if (paytr?.iframeUrl || !orderNo) return;
-    api(`/api/paytr/orders/${orderNo}/iframe-token`, { method: "POST" })
-      .then((result) => setPaytr(result.paytr))
-      .catch((requestError) => setError(requestError.message));
-  }, [orderNo, paytr?.iframeUrl]);
-
-  useEffect(() => {
-    if (!paytr?.iframeUrl) return;
-    const timer = window.setTimeout(() => {
-      if (window.iFrameResize) window.iFrameResize({}, "#paytriframe");
-    }, 600);
-    return () => window.clearTimeout(timer);
-  }, [paytr?.iframeUrl]);
-
-  return (
-    <div className="paytr-page">
-      <div className="paytr-head">
-        <p className="eyebrow">GÜVENLİ ÖDEME</p>
-        <h1>Kart ile ödeme</h1>
-        <p>Sipariş No: <strong>{orderNo}</strong></p>
-      </div>
-      {error && <div className="form-error">{error}</div>}
-      {!error && !paytr?.iframeUrl && <Loading />}
-      {paytr?.iframeUrl && (
-        <iframe
-          id="paytriframe"
-          title="PayTR Güvenli Ödeme"
-          src={paytr.iframeUrl}
-          frameBorder="0"
-          scrolling="no"
-          className="paytr-iframe"
-        />
-      )}
-    </div>
-  );
-}
-
-export function PaymentFailurePage() {
-  const [params] = useSearchParams();
-  const orderNo = params.get("order");
-  return (
-    <div className="success-page payment-failed-page">
-      <div className="success-check failed"><X /></div>
-      <p className="eyebrow">ÖDEME TAMAMLANAMADI</p>
-      <h1>Ödeme başarısız oldu.</h1>
-      <p>İsterseniz sepetinize dönüp tekrar deneyebilir veya bizimle iletişime geçebilirsiniz.</p>
-      {orderNo && <div className="order-number"><span>Sipariş numarası</span><strong>{orderNo}</strong></div>}
-      <Link className="button dark" to="/sepet">SEPETE DÖN</Link>
     </div>
   );
 }
@@ -890,7 +553,7 @@ export function InfoPage({ type }) {
         <div className="faq-list">
           <details open><summary>Kargom ne zaman gönderilir?</summary><p>Siparişler genellikle 1-3 iş günü içinde hazırlanıp kargoya teslim edilir.</p></details>
           <details><summary>İade süresi kaç gün?</summary><p>Ürünlerinizi teslim aldıktan sonra {settings.returnDays || 15} iş günü içinde iade talebi oluşturabilirsiniz.</p></details>
-          <details><summary>Nasıl ödeme yapabilirim?</summary><p>Ödemeler PayTR güvenli ödeme altyapısı üzerinden kart ile alınır.</p></details>
+          <details><summary>Nasıl satın alabilirim?</summary><p>Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir.</p></details>
         </div>
       )}
     </div>

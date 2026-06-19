@@ -1,20 +1,17 @@
-# Aslım Boutique
+﻿# Aslım Boutique
 
-Referans Ikas mağazasının görsel dilini temel alan, bağımsız yönetim panelli e-ticaret uygulaması.
+Referans Ikas mağazasının görsel dilini temel alan, bağımsız yönetim panelli butik vitrini.
 
 ## Özellikler
 
 - Mobil ve masaüstü uyumlu mağaza vitrini
-- Müşteri kayıt, giriş, hesabım, favoriler ve sipariş geçmişi
-- Sipariş öncesi e-posta doğrulama zorunluluğu
+- Müşteri kayıt, giriş, hesabım ve favoriler
+- Sipariş öncesi e-posta doğrulama altyapısı
 - Ürün, kategori, stok, fiyat, görsel, logo, duyuru ve site ayarları yönetimi
 - Renk/beden kombinasyonlarına özel ürün görselleri
-- Yönetim panelinde açık teslimat adresi, sipariş durumu, iptal sebebi ve kargo takip kodu
-- Ciro özetleri: 1 hafta, 1 ay, 1 yıl ve tüm zamanlar
-- Stokta olmayan ürünlerde şeffaf “stokta yok” etiketi
+- Stokta olmayan ürünlerde şeffaf "stokta yok" etiketi
+- Ürün sayfasında Sepete Ekle yerine WhatsApp'a yönlendiren Satın Al butonu
 - Supabase veritabanı ve Supabase Storage görsel yükleme
-- PayTR iFrame ödeme altyapısı
-- Kapıda ödeme kapalıdır
 
 ## Yerel Çalıştırma
 
@@ -37,7 +34,7 @@ E-posta: aslimboutique@gmail.com
 
 ## Ortam Değişkenleri
 
-`.env.example` dosyasını `.env` adıyla çoğaltıp Supabase, SMTP ve PayTR bilgilerini girin.
+`.env.example` dosyasını `.env` adıyla çoğaltıp Supabase ve SMTP bilgilerini girin.
 
 En kritik değişkenler:
 
@@ -47,12 +44,17 @@ PUBLIC_SITE_URL=https://alanadiniz.com
 SUPABASE_URL=https://proje-ref.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 SUPABASE_STORAGE_BUCKET=aslim-boutique
-PAYTR_MERCHANT_ID=...
-PAYTR_MERCHANT_KEY=...
-PAYTR_MERCHANT_SALT=...
 ```
 
-PayTR bilgileri yoksa ödeme butonu pasif kalır.
+## Satın Alma Akışı
+
+Sitede ödeme altyapısı ve sepet akışı yoktur. Kullanıcı ürün detayına girer, `Satın Al` butonuna basar ve WhatsApp görüşmesine ürün linkiyle yönlendirilir.
+
+Örnek otomatik mesaj:
+
+```text
+https://aslimboutique.vercel.app/kategori/alt-giyim/yelek Ürünü hakkında bilgi almak istiyorum.
+```
 
 ## Supabase
 
@@ -85,10 +87,4 @@ Vercel için `vercel.json` hazırdır. Detaylı yayın sırası:
 
 ```text
 docs/deploy-supabase-vercel.md
-```
-
-PayTR panelinde Bildirim URL:
-
-```text
-https://alanadiniz.com/api/paytr/callback
 ```

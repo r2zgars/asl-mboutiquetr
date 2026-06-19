@@ -83,7 +83,7 @@ create table if not exists public.orders (
   apartment_no text not null default '',
   postal_code text not null default '',
   notes text not null default '',
-  payment_method text not null default 'PayTR',
+  payment_method text not null default 'WhatsApp',
   status text not null default 'Yeni',
   tracking_code text not null default '',
   cancel_reason text not null default '',
@@ -91,10 +91,6 @@ create table if not exists public.orders (
   shipping numeric(12, 2) not null,
   total numeric(12, 2) not null,
   items jsonb not null default '[]'::jsonb,
-  paytr_token text not null default '',
-  paytr_status text not null default '',
-  paytr_total_amount integer,
-  paytr_callback jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
 

@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+﻿import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
 export function slugify(value) {
   return String(value || "")
@@ -63,7 +63,6 @@ export function toOrder(row) {
     subtotal: Number(row.subtotal || 0),
     shipping: Number(row.shipping || 0),
     total: Number(row.total || 0),
-    items: safeJson(row.items),
-    paytr_callback: safeJson(row.paytr_callback, {})
+    items: safeJson(row.items)
   };
 }

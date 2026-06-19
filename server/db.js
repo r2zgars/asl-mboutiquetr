@@ -99,7 +99,7 @@ db.exec(`
     apartment_no TEXT NOT NULL DEFAULT '',
     postal_code TEXT NOT NULL DEFAULT '',
     notes TEXT NOT NULL DEFAULT '',
-    payment_method TEXT NOT NULL DEFAULT 'PayTR',
+    payment_method TEXT NOT NULL DEFAULT 'WhatsApp',
     status TEXT NOT NULL DEFAULT 'Yeni',
     tracking_code TEXT NOT NULL DEFAULT '',
     cancel_reason TEXT NOT NULL DEFAULT '',
@@ -107,10 +107,6 @@ db.exec(`
     shipping REAL NOT NULL,
     total REAL NOT NULL,
     items TEXT NOT NULL,
-    paytr_token TEXT NOT NULL DEFAULT '',
-    paytr_status TEXT NOT NULL DEFAULT '',
-    paytr_total_amount INTEGER,
-    paytr_callback TEXT NOT NULL DEFAULT '{}',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -150,11 +146,7 @@ const orderColumnDefaults = {
   floor: "TEXT NOT NULL DEFAULT ''",
   apartment_no: "TEXT NOT NULL DEFAULT ''",
   tracking_code: "TEXT NOT NULL DEFAULT ''",
-  cancel_reason: "TEXT NOT NULL DEFAULT ''",
-  paytr_token: "TEXT NOT NULL DEFAULT ''",
-  paytr_status: "TEXT NOT NULL DEFAULT ''",
-  paytr_total_amount: "INTEGER",
-  paytr_callback: "TEXT NOT NULL DEFAULT '{}'"
+  cancel_reason: "TEXT NOT NULL DEFAULT ''"
 };
 for (const [column, definition] of Object.entries(orderColumnDefaults)) {
   if (!orderColumns.includes(column)) {

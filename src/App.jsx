@@ -1,16 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import {
-  CartPage,
   CategoryPage,
-  CheckoutPage,
   CustomerAccountPage,
   CustomerAuthPage,
   HomePage,
   InfoPage,
   NotFound,
-  OrderSuccessPage,
-  PaymentFailurePage,
-  PaytrPaymentPage,
   ProductPage,
   SearchPage,
   StoreLayout
@@ -31,13 +26,9 @@ export default function App() {
       <Route element={<StoreLayout />}>
         <Route index element={<HomePage />} />
         <Route path="kategori/:slug" element={<CategoryPage />} />
+        <Route path="kategori/:categorySlug/:productSlug" element={<ProductPage />} />
         <Route path="urun/:slug" element={<ProductPage />} />
         <Route path="arama" element={<SearchPage />} />
-        <Route path="sepet" element={<CartPage />} />
-        <Route path="odeme" element={<CheckoutPage />} />
-        <Route path="paytr-odeme/:orderNo" element={<PaytrPaymentPage />} />
-        <Route path="siparis-basarili" element={<OrderSuccessPage />} />
-        <Route path="odeme-basarisiz" element={<PaymentFailurePage />} />
         <Route path="iletisim" element={<InfoPage type="contact" />} />
         <Route path="sss" element={<InfoPage type="faq" />} />
         <Route path="giris" element={<CustomerAuthPage mode="login" />} />

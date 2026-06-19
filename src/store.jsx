@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { api, getVariantImages } from "./api";
+import { api } from "./api";
 
 const StoreContext = createContext(null);
 
@@ -10,13 +10,6 @@ export function StoreProvider({ children }) {
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [favoriteIds, setFavoriteIds] = useState([]);
-  const [cart, setCart] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("aslim-cart") || "[]");
-    } catch {
-      return [];
-    }
-  });
 
   async function refreshStore() {
     setLoading(true);
@@ -51,51 +44,6 @@ export function StoreProvider({ children }) {
       .catch(() => setFavoriteIds([]));
   }, [customer?.id]);
 
-  useEffect(() => {
-    localStorage.setItem("aslim-cart", JSON.stringify(cart));
-  }, [cart]);
-
-  function addToCart(product, options = {}) {
-    const key = `${product.id}-${options.size || ""}-${options.color || ""}`;
-    setCart((current) => {
-      const existing = current.find((item) => item.key === key);
-      if (existing) {
-        return current.map((item) =>
-          item.key === key
-            ? { ...item, quantity: Math.min(product.stock, item.quantity + (options.quantity || 1)) }
-            : item
-        );
-      }
-      return [
-        ...current,
-        {
-          key,
-          productId: product.id,
-          slug: product.slug,
-          name: product.name,
-          image: getVariantImages(product, options.color, options.size)[0] || product.images?.[0] || "",
-          price: product.price,
-          stock: product.stock,
-          size: options.size || "",
-          color: options.color || "",
-          quantity: options.quantity || 1
-        }
-      ];
-    });
-  }
-
-  function updateQuantity(key, quantity) {
-    setCart((current) =>
-      current
-        .map((item) => (item.key === key ? { ...item, quantity: Math.max(0, Math.min(item.stock, quantity)) } : item))
-        .filter((item) => item.quantity > 0)
-    );
-  }
-
-  function removeFromCart(key) {
-    setCart((current) => current.filter((item) => item.key !== key));
-  }
-
   async function toggleFavorite(productId) {
     if (!customer) return false;
     const normalizedId = Number(productId);
@@ -110,13 +58,6 @@ export function StoreProvider({ children }) {
     return !favorite;
   }
 
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping =
-    subtotal === 0 || subtotal >= Number(store.settings.freeShippingThreshold || 0)
-      ? 0
-      : Number(store.settings.shippingFee || 0);
-
   const value = useMemo(
     () => ({
       ...store,
@@ -125,21 +66,12 @@ export function StoreProvider({ children }) {
       customer,
       adminAuthenticated,
       favoriteIds,
-      cart,
-      cartCount,
-      subtotal,
-      shipping,
-      total: subtotal + shipping,
-      addToCart,
-      updateQuantity,
-      removeFromCart,
       toggleFavorite,
-      clearCart: () => setCart([]),
       refreshStore,
       refreshAuth,
       setCustomer
     }),
-    [store, loading, authLoading, customer, adminAuthenticated, favoriteIds, cart, cartCount, subtotal, shipping]
+    [store, loading, authLoading, customer, adminAuthenticated, favoriteIds]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
