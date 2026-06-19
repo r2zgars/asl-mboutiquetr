@@ -109,7 +109,7 @@ async function migrate() {
       apartment_no: order.apartment_no || "",
       postal_code: order.postal_code || "",
       notes: order.notes || "",
-      payment_method: order.payment_method === "KapÄ±da Ã–deme" ? "PayTR" : (order.payment_method || "PayTR"),
+      payment_method: order.payment_method === "Kapıda Ödeme" ? "PayTR" : (order.payment_method || "PayTR"),
       status: order.status || "Yeni",
       tracking_code: order.tracking_code || "",
       cancel_reason: order.cancel_reason || "",
@@ -151,4 +151,5 @@ migrate().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
 
