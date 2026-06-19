@@ -1,83 +1,45 @@
-# Supabase + Vercel Yayın Planı
+﻿# Supabase + Vercel Yayın Notları
 
-Bu proje canlıya alınırken kalıcı veriler Supabase'de, frontend/API ise Vercel'de çalışacak şekilde hazırlandı.
+Bu proje ödeme altyapısı kullanmaz. Satın alma akışı ürün sayfasındaki `Satın Al` butonuyla WhatsApp'a yönlenir.
 
 ## 1. Supabase
 
-1. Supabase'de proje oluşturun.
-2. `supabase/schema.sql` dosyasındaki SQL'i SQL Editor'da çalıştırın.
-3. Storage bölümünde `aslim-boutique` bucket'ının public olduğunu kontrol edin.
-4. Project Settings > API ekranından şu değerleri alın:
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-
-`SUPABASE_SERVICE_ROLE_KEY` sadece server/Vercel ortam değişkenlerinde tutulur. Frontend koduna yazılmaz.
-
-Yereldeki SQLite verilerini Supabase'e taşımak için:
-
-```powershell
-npm run supabase:migrate
-```
+1. Supabase projesini açın.
+2. SQL Editor bölümünde `supabase/schema.sql` içeriğini çalıştırın.
+3. Storage bucket adı: `aslim-boutique`.
 
 ## 2. Vercel Environment Variables
 
-Vercel Project Settings > Environment Variables bölümüne şunları girin:
+Vercel > Project > Settings > Environment Variables alanına şu değişkenleri ekleyin:
 
 ```text
 NODE_ENV=production
 PUBLIC_SITE_URL=https://alanadiniz.com
-
 SUPABASE_URL=https://proje-ref.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 SUPABASE_STORAGE_BUCKET=aslim-boutique
-
-SMTP_HOST=...
+SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=...
+SMTP_USER=mail@example.com
 SMTP_PASS=...
-SMTP_FROM="Aslim Boutique <mail@alanadiniz.com>"
-
-PAYTR_MERCHANT_ID=...
-PAYTR_MERCHANT_KEY=...
-PAYTR_MERCHANT_SALT=...
-PAYTR_TEST_MODE=1
-PAYTR_DEBUG_ON=1
-PAYTR_NO_INSTALLMENT=0
-PAYTR_MAX_INSTALLMENT=0
-PAYTR_TIMEOUT_LIMIT=30
-PAYTR_CURRENCY=TL
+SMTP_FROM="Aslim Boutique <mail@example.com>"
 ```
 
-PayTR bilgileri gelmeden deploy yapılabilir; bu durumda ödeme butonu pasif görünür. PayTR bilgileri eklenince ödeme ekranı açılır.
+SMTP yoksa e-posta doğrulama kodu canlıda e-postaya gitmez. Sipariş/ödeme akışı olmadığı için ödeme değişkeni eklemeyin.
 
-## 3. PayTR Panel Ayarları
+## 3. Deploy
 
-PayTR panelinde Bildirim URL:
+1. GitHub'a `.env` dosyasını yüklemeyin.
+2. Vercel'de repo import edin.
+3. Framework preset: Vite.
+4. Root directory: `./`.
+5. Deploy butonuna basın.
 
-```text
-https://alanadiniz.com/api/paytr/callback
-```
+## 4. Canlı Kontrol
 
-Testler tamamlanana kadar:
-
-```text
-PAYTR_TEST_MODE=1
-PAYTR_DEBUG_ON=1
-```
-
-Canlıya geçerken:
-
-```text
-PAYTR_TEST_MODE=0
-PAYTR_DEBUG_ON=0
-```
-
-## 4. Kontrol Listesi
-
-- Supabase SQL şeması çalıştırıldı.
-- SQLite verileri Supabase'e aktarıldı.
-- Vercel env değişkenleri girildi.
-- `PUBLIC_SITE_URL` canlı alan adıyla güncellendi.
-- PayTR callback URL PayTR paneline eklendi.
-- İlk test siparişi PayTR test modunda denendi.
+- Ana sayfa açılıyor.
+- Ürün kartları ürün detayına gidiyor.
+- Ürün detayında `Satın Al` WhatsApp'a ürün linkli mesajla yönlendiriyor.
+- Yönetim panelinde görsel yükleme Supabase Storage'a çalışıyor.
+- Kullanıcı kayıt/giriş ve favoriler çalışıyor.
