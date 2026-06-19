@@ -109,7 +109,7 @@ async function migrate() {
       apartment_no: order.apartment_no || "",
       postal_code: order.postal_code || "",
       notes: order.notes || "",
-      payment_method: order.payment_method === "Kapıda Ödeme" ? "PayTR" : (order.payment_method || "PayTR"),
+      payment_method: order.payment_method || "WhatsApp",
       status: order.status || "Yeni",
       tracking_code: order.tracking_code || "",
       cancel_reason: order.cancel_reason || "",
@@ -117,10 +117,6 @@ async function migrate() {
       shipping: Number(order.shipping || 0),
       total: Number(order.total || 0),
       items: remapOrderItems(order.items),
-      paytr_token: order.paytr_token || "",
-      paytr_status: order.paytr_status || "",
-      paytr_total_amount: order.paytr_total_amount == null ? null : Number(order.paytr_total_amount),
-      paytr_callback: safeJson(order.paytr_callback, {}),
       created_at: order.created_at
     }, "order_no", "id,order_no");
   }
