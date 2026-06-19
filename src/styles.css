@@ -352,21 +352,25 @@ img {
 
 .search-overlay {
   position: fixed;
-  inset: 0;
+  top: 82px;
+  right: 24px;
   z-index: 110;
-  display: grid;
-  place-items: center;
+  width: min(520px, calc(100% - 32px));
+  padding: 22px;
+  border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.16);
+  animation: searchDrop 0.22s ease both;
 }
 
 .search-close {
   position: absolute;
-  top: 30px;
-  right: 35px;
+  top: 10px;
+  right: 10px;
 }
 
 .search-overlay form {
-  width: min(680px, calc(100% - 44px));
+  width: 100%;
 }
 
 .search-overlay form > span {
@@ -388,13 +392,24 @@ img {
   border: 0;
   outline: none;
   font-family: Georgia, serif;
-  font-size: clamp(28px, 4vw, 48px);
+  font-size: clamp(20px, 3vw, 30px);
 }
 
 .search-overlay form button {
   width: 55px;
   border: 0;
   background: transparent;
+}
+
+@keyframes searchDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero {
@@ -2149,31 +2164,6 @@ img {
   line-height: 1.6;
 }
 
-.verification-badge {
-  min-width: max-content;
-  padding: 7px 10px;
-  border-radius: 20px;
-  background: #fff1ef;
-  color: #a43f37;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.verification-badges {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.verification-badge.verified {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #edf8f0;
-  color: #25713b;
-}
 
 .account-form-grid {
   margin-bottom: 20px;
@@ -2209,19 +2199,11 @@ img {
   border-color: #111;
 }
 
-.verification-row,
 .account-form-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-}
-
-.verification-row input {
-  width: 170px;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-align: center;
+  gap: 16px;
 }
 
 .text-action {
@@ -4069,22 +4051,6 @@ img {
     font-size: 16px;
   }
 
-  .verification-row,
-  .account-form-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .verification-row input,
-  .verification-row .button,
-  .account-form-actions .button {
-    width: 100%;
-  }
-
-  .text-action {
-    align-self: center;
-  }
-
   .account-favorites-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px 8px;
@@ -4238,13 +4204,15 @@ img {
   }
 
   .search-overlay {
-    min-height: 100dvh;
-    padding: max(24px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
+    top: max(66px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    width: calc(100% - 24px);
+    padding: 20px;
   }
 
   .search-close {
-    top: max(18px, env(safe-area-inset-top));
-    right: max(14px, env(safe-area-inset-right));
+    top: 8px;
+    right: 8px;
   }
 }
 

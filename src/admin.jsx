@@ -321,6 +321,7 @@ function ProductModal({ product, categories, onClose, onSaved }) {
     sizes: product?.sizes || [],
     colors: product?.colors || [],
     variantImages: product?.variant_images || [],
+    purchaseUrl: product?.purchase_url || "",
     featured: product?.featured || false,
     active: product?.active ?? true
   });
@@ -919,6 +920,17 @@ export function AdminSettings() {
             <label>WhatsApp numarası<input name="whatsapp" value={form.whatsapp || ""} onChange={update} /></label>
             <label>Instagram adresi<input name="instagram" value={form.instagram || ""} onChange={update} /></label>
             <label className="wide">Adres<input name="address" value={form.address || ""} onChange={update} /></label>
+          </div>
+        </SettingsSection>
+
+        <SettingsSection title="Güven şeridi" description="Ana sayfadaki Güvenli alışveriş, Hızlı gönderim ve Kolay iade kutularını düzenleyin.">
+          <div className="form-grid">
+            <label>1. başlık<input name="trustTitle1" value={form.trustTitle1 || ""} onChange={update} /></label>
+            <label>1. alt metin<input name="trustText1" value={form.trustText1 || ""} onChange={update} /></label>
+            <label>2. başlık<input name="trustTitle2" value={form.trustTitle2 || ""} onChange={update} /></label>
+            <label>2. alt metin<input name="trustText2" value={form.trustText2 || ""} onChange={update} /></label>
+            <label>3. başlık<input name="trustTitle3" value={form.trustTitle3 || ""} onChange={update} /></label>
+            <label>3. alt metin<input name="trustText3" value={form.trustText3 || ""} onChange={update} /></label>
           </div>
         </SettingsSection>
 

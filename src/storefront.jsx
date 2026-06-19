@@ -2,7 +2,6 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   ChevronDown,
   Heart,
   Home,
@@ -10,7 +9,6 @@ import {
   LayoutGrid,
   LockKeyhole,
   LogOut,
-  MapPin,
   MessageCircle,
   Menu,
   PackageCheck,
@@ -22,7 +20,7 @@ import {
   X
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { api, formatDate, formatPrice, getVariantImages } from "./api";
+import { api, formatPrice, getVariantImages } from "./api";
 import { useStore } from "./store";
 
 function scrollPageTop() {
@@ -72,11 +70,6 @@ function whatsappUrl(settings, message = "Merhaba, mağazanız hakkında bilgi a
 function productPath(product) {
   if (!product) return "/";
   return product.category_slug ? `/kategori/${product.category_slug}/${product.slug}` : `/urun/${product.slug}`;
-}
-
-function productWhatsappMessage(product) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://aslimboutique.vercel.app";
-  return `${origin}${productPath(product)} Ürünü hakkında bilgi almak istiyorum.`;
 }
 
 function AnnouncementBar({ settings }) {
@@ -316,9 +309,9 @@ export function HomePage() {
 function TrustStrip({ settings }) {
   return (
     <section className="trust-strip reveal">
-      <div><ShieldCheck /><span><strong>Güvenli alışveriş</strong><small>256 Bit SSL koruması</small></span></div>
-      <div><Truck /><span><strong>Hızlı gönderim</strong><small>Özenli ve takipli teslimat</small></span></div>
-      <div><PackageCheck /><span><strong>Kolay iade</strong><small>{settings.returnDays || 15} iş günü içinde</small></span></div>
+      <div><ShieldCheck /><span><strong>{settings.trustTitle1 || "Güvenli alışveriş"}</strong><small>{settings.trustText1 || "256 Bit SSL koruması"}</small></span></div>
+      <div><Truck /><span><strong>{settings.trustTitle2 || "Hızlı gönderim"}</strong><small>{settings.trustText2 || "Özenli ve takipli teslimat"}</small></span></div>
+      <div><PackageCheck /><span><strong>{settings.trustTitle3 || "Kolay iade"}</strong><small>{settings.trustText3 || "3 iş günü içinde"}</small></span></div>
     </section>
   );
 }
@@ -461,7 +454,7 @@ export function SearchPage() {
 
 export function ProductPage() {
   const { slug, productSlug } = useParams();
-  const { products, loading, settings } = useStore();
+  const { products, loading } = useStore();
   const product = products.find((item) => item.slug === (productSlug || slug));
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
@@ -476,7 +469,7 @@ export function ProductPage() {
 
   if (loading) return <Loading />;
   if (!product) return <NotFound />;
-  const buyHref = whatsappUrl(settings, productWhatsappMessage(product));
+  const buyHref = String(product.purchase_url || "").trim();
 
   return (
     <div className="product-page reveal">
@@ -513,10 +506,12 @@ export function ProductPage() {
           </div>
         )}
         <div className="purchase-row">
-          {product.stock > 0 ? (
+          {product.stock > 0 && buyHref ? (
             <a className="button dark add-button" href={buyHref} target="_blank" rel="noreferrer">
               SATIN AL
             </a>
+          ) : product.stock > 0 ? (
+            <button className="button dark add-button" disabled>SATIN AL LİNKİ YOK</button>
           ) : (
             <button className="button dark add-button" disabled>STOKTA YOK</button>
           )}
@@ -594,7 +589,6 @@ export function CustomerAuthPage({ mode }) {
         navigate(result.redirect || "/admin");
         return;
       }
-      if (result.developmentCode) sessionStorage.setItem("aslim-verification-code", result.developmentCode);
       await refreshAuth();
       navigate(register ? "/hesabim?bolum=profile" : "/hesabim");
     } catch (requestError) {
@@ -630,27 +624,19 @@ export function CustomerAccountPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const requestedSection = new URLSearchParams(location.search).get("bolum");
-  const [activeSection, setActiveSection] = useState(requestedSection === "profile" ? "profile" : "orders");
-  const [orders, setOrders] = useState([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState(requestedSection === "favorites" ? "favorites" : "profile");
   const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
   const [profileMessage, setProfileMessage] = useState("");
   const [profileError, setProfileError] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verificationMessage, setVerificationMessage] = useState("");
-  const [verificationError, setVerificationError] = useState("");
-  const [developmentCode, setDevelopmentCode] = useState(() => sessionStorage.getItem("aslim-verification-code") || "");
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
-    verificationCode: "",
     newPassword: "",
     confirmPassword: ""
   });
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaving, setPasswordSaving] = useState(false);
-  const [passwordDevelopmentCode, setPasswordDevelopmentCode] = useState("");
 
   useEffect(() => {
     if (!authLoading && !customer) navigate("/giris", { replace: true });
@@ -658,20 +644,11 @@ export function CustomerAccountPage() {
 
   useEffect(() => {
     if (!customer) return;
-    setOrdersLoading(true);
-    api("/api/account/orders")
-      .then(setOrders)
-      .catch(() => setOrders([]))
-      .finally(() => setOrdersLoading(false));
-  }, [customer]);
-
-  useEffect(() => {
-    if (!customer) return;
     setProfile({ name: customer.name || "", email: customer.email || "", phone: customer.phone || "" });
   }, [customer]);
 
   useEffect(() => {
-    if (requestedSection === "profile") setActiveSection("profile");
+    setActiveSection(requestedSection === "favorites" ? "favorites" : "profile");
   }, [requestedSection]);
 
   async function saveProfile(event) {
@@ -684,59 +661,12 @@ export function CustomerAccountPage() {
         method: "PUT",
         body: JSON.stringify(profile)
       });
-      if (result.developmentCode) {
-        sessionStorage.setItem("aslim-verification-code", result.developmentCode);
-        setDevelopmentCode(result.developmentCode);
-      }
       setProfileMessage(result.message);
       await refreshAuth();
     } catch (error) {
       setProfileError(error.message);
     } finally {
       setProfileSaving(false);
-    }
-  }
-
-  async function sendVerificationCode(purpose = "email_verification") {
-    setVerificationError("");
-    setPasswordError("");
-    try {
-      const result = await api("/api/account/verification/send", {
-        method: "POST",
-        body: JSON.stringify({ purpose })
-      });
-      if (purpose === "password_change") {
-        setPasswordMessage(result.message);
-        setPasswordDevelopmentCode(result.developmentCode || "");
-      } else {
-        setVerificationMessage(result.message);
-        if (result.developmentCode) {
-          sessionStorage.setItem("aslim-verification-code", result.developmentCode);
-          setDevelopmentCode(result.developmentCode);
-        }
-      }
-    } catch (error) {
-      if (purpose === "password_change") setPasswordError(error.message);
-      else setVerificationError(error.message);
-    }
-  }
-
-  async function confirmEmail(event) {
-    event.preventDefault();
-    setVerificationError("");
-    setVerificationMessage("");
-    try {
-      const result = await api("/api/account/verification/confirm", {
-        method: "POST",
-        body: JSON.stringify({ code: verificationCode })
-      });
-      setVerificationMessage(result.message);
-      setVerificationCode("");
-      setDevelopmentCode("");
-      sessionStorage.removeItem("aslim-verification-code");
-      await refreshAuth();
-    } catch (error) {
-      setVerificationError(error.message);
     }
   }
 
@@ -748,6 +678,10 @@ export function CustomerAccountPage() {
       setPasswordError("Yeni şifreler eşleşmiyor.");
       return;
     }
+    if (!passwordForm.currentPassword) {
+      setPasswordError("Şifrenizi değiştirmek için mevcut şifrenizi girin.");
+      return;
+    }
     setPasswordSaving(true);
     try {
       const result = await api("/api/account/password", {
@@ -755,8 +689,7 @@ export function CustomerAccountPage() {
         body: JSON.stringify(passwordForm)
       });
       setPasswordMessage(result.message);
-      setPasswordForm({ currentPassword: "", verificationCode: "", newPassword: "", confirmPassword: "" });
-      setPasswordDevelopmentCode("");
+      setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
       setPasswordError(error.message);
     } finally {
@@ -772,23 +705,14 @@ export function CustomerAccountPage() {
 
   if (authLoading || !customer) return <Loading />;
   const favoriteProducts = products.filter((product) => favoriteIds.includes(Number(product.id)));
-
   const sections = [
-    { id: "profile", label: "Kişisel Bilgilerim", group: "Kişisel Bilgilerim" },
-    { id: "addresses", label: "Adreslerim", group: "Kişisel Bilgilerim" },
-    { id: "favorites", label: "Beğendiğim Ürünler", group: "Kişisel Bilgilerim" },
-    { id: "orders", label: "Siparişlerim", group: "Sipariş Bilgilerim" }
+    { id: "profile", label: "Kişisel Bilgilerim" },
+    { id: "favorites", label: "Beğendiğim Ürünler" }
   ];
-
-  const sectionTitle = {
-    profile: "Kişisel Bilgilerim",
-    addresses: "Adreslerim",
-    favorites: "Beğendiğim Ürünler",
-    orders: `Siparişlerim (${orders.length})`
-  }[activeSection];
+  const sectionTitle = activeSection === "favorites" ? "Beğendiğim Ürünler" : "Kişisel Bilgilerim";
 
   return (
-    <div className="account-page">
+    <div className="account-page compact-account-page">
       <aside className="account-sidebar">
         <div className="account-user">
           <div className="account-avatar">{customer.name.slice(0, 1).toLocaleUpperCase("tr-TR")}</div>
@@ -799,20 +723,18 @@ export function CustomerAccountPage() {
         </div>
 
         <div className="account-menu-groups">
-          {["Kişisel Bilgilerim", "Sipariş Bilgilerim"].map((group) => (
-            <div className="account-menu-group" key={group}>
-              <h2>{group}</h2>
-              {sections.filter((section) => section.group === group).map((section) => (
-                <button
-                  key={section.id}
-                  className={activeSection === section.id ? "active" : ""}
-                  onClick={() => setActiveSection(section.id)}
-                >
-                  {section.label}
-                </button>
-              ))}
-            </div>
-          ))}
+          <div className="account-menu-group">
+            <h2>Hesabım</h2>
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                className={activeSection === section.id ? "active" : ""}
+                onClick={() => setActiveSection(section.id)}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
         </div>
       </aside>
 
@@ -822,58 +744,15 @@ export function CustomerAccountPage() {
           <h1>{sectionTitle}</h1>
         </div>
 
-        {activeSection === "orders" && (
-          ordersLoading ? <Loading /> : orders.length ? (
-            <div className="account-orders">
-              {orders.map((order) => (
-                <article className="account-order-card" key={order.id}>
-                  <div className="account-order-head">
-                    <div><span>Sipariş No</span><strong>{order.order_no}</strong></div>
-                    <div><span>Tarih</span><strong>{formatDate(order.created_at)}</strong></div>
-                    <div><span>Durum</span><strong className="order-status">{order.status}</strong></div>
-                    <div><span>Toplam</span><strong>{formatPrice(order.total)}</strong></div>
-                  </div>
-                  {(order.tracking_code || order.cancel_reason) && (
-                    <div className="account-order-meta">
-                      {order.tracking_code && <div><span>Kargo takip kodu</span><strong>{order.tracking_code}</strong></div>}
-                      {order.cancel_reason && <div><span>İptal sebebi</span><strong>{order.cancel_reason}</strong></div>}
-                    </div>
-                  )}
-                  <div className="account-order-items">
-                    {order.items.map((item, index) => (
-                      <Link to={`/urun/${item.slug}`} key={`${item.productId}-${index}`}>
-                        <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
-                        <span>
-                          <strong>{item.name}</strong>
-                          <small>{[item.color, item.size, `${item.quantity} adet`].filter(Boolean).join(" · ")}</small>
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="account-empty">
-              <ShoppingBag size={35} strokeWidth={1.4} />
-              <p>Henüz sipariş verilmedi. <Link to="/kategori/new-drop">Ürünlere göz at</Link></p>
-            </div>
-          )
-        )}
-
         {activeSection === "profile" && (
           <div className="account-settings-stack">
             <form className="account-settings-card" onSubmit={saveProfile}>
               <div className="account-card-title">
                 <div>
                   <h2>Kişisel bilgiler</h2>
-                  <p>Hesabınızda kullanılan ad, e-posta ve telefon bilgilerini yönetin.</p>
+                  <p>Ad, e-posta ve telefon bilgilerinizi buradan güncelleyin.</p>
                 </div>
-                <div className="verification-badges">
-                  <span className={customer.email_verified ? "verification-badge verified" : "verification-badge"}>
-                    {customer.email_verified ? <><Check size={14} /> E-posta doğrulandı</> : "E-posta doğrulanmadı"}
-                  </span>
-                </div>
+                <UserRound size={24} strokeWidth={1.5} />
               </div>
               {profileError && <div className="form-error">{profileError}</div>}
               {profileMessage && <div className="form-success">{profileMessage}</div>}
@@ -887,67 +766,25 @@ export function CustomerAccountPage() {
               </button>
             </form>
 
-            {!customer.email_verified && (
-              <form className="account-settings-card verification-card" onSubmit={confirmEmail}>
-                <div className="account-card-title">
-                  <div>
-                    <h2>E-posta doğrulama</h2>
-                    <p>{customer.email} adresine gönderilen 6 haneli kodu girin.</p>
-                  </div>
-                  <ShieldCheck size={24} strokeWidth={1.5} />
-                </div>
-                {verificationError && <div className="form-error">{verificationError}</div>}
-                {verificationMessage && <div className="form-success">{verificationMessage}</div>}
-                {developmentCode && <div className="development-code">Yerel doğrulama kodu: <strong>{developmentCode}</strong></div>}
-                <div className="verification-row">
-                  <input
-                    inputMode="numeric"
-                    maxLength="6"
-                    value={verificationCode}
-                    onChange={(event) => setVerificationCode(event.target.value.replace(/\D/g, ""))}
-                    placeholder="6 haneli kod"
-                    required
-                  />
-                  <button className="button dark">DOĞRULA</button>
-                  <button type="button" className="text-action" onClick={() => sendVerificationCode()}>
-                    Kodu tekrar gönder
-                  </button>
-                </div>
-              </form>
-            )}
             <form className="account-settings-card" onSubmit={changePassword}>
               <div className="account-card-title">
                 <div>
                   <h2>Şifre değiştir</h2>
-                  <p>Mevcut şifrenizi veya e-postanıza gelen doğrulama kodunu kullanın.</p>
+                  <p>Şifrenizi değiştirmek için mevcut şifrenizi girin.</p>
                 </div>
                 <LockKeyhole size={24} strokeWidth={1.5} />
               </div>
               {passwordError && <div className="form-error">{passwordError}</div>}
               {passwordMessage && <div className="form-success">{passwordMessage}</div>}
-              {passwordDevelopmentCode && <div className="development-code">Yerel şifre kodu: <strong>{passwordDevelopmentCode}</strong></div>}
               <div className="account-form-grid">
-                <label>Mevcut şifre<input type="password" value={passwordForm.currentPassword} onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })} autoComplete="current-password" /></label>
-                <label>Ya da e-posta kodu<input inputMode="numeric" maxLength="6" value={passwordForm.verificationCode} onChange={(event) => setPasswordForm({ ...passwordForm, verificationCode: event.target.value.replace(/\D/g, "") })} /></label>
+                <label className="wide">Mevcut şifre<input type="password" value={passwordForm.currentPassword} onChange={(event) => setPasswordForm({ ...passwordForm, currentPassword: event.target.value })} autoComplete="current-password" required /></label>
                 <label>Yeni şifre<input type="password" minLength="8" value={passwordForm.newPassword} onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })} autoComplete="new-password" required /></label>
                 <label>Yeni şifre tekrar<input type="password" minLength="8" value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })} autoComplete="new-password" required /></label>
               </div>
-              <div className="account-form-actions">
-                <button className="button dark" disabled={passwordSaving}>
-                  {passwordSaving ? "GÜNCELLENİYOR..." : "ŞİFREYİ GÜNCELLE"}
-                </button>
-                <button type="button" className="text-action" onClick={() => sendVerificationCode("password_change")}>
-                  E-postama kod gönder
-                </button>
-              </div>
+              <button className="button dark" disabled={passwordSaving}>
+                {passwordSaving ? "GÜNCELLENİYOR..." : "ŞİFREYİ GÜNCELLE"}
+              </button>
             </form>
-          </div>
-        )}
-
-        {activeSection === "addresses" && (
-          <div className="account-empty">
-            <MapPin size={35} strokeWidth={1.4} />
-            <p>Henüz kayıtlı adresiniz yok. Sipariş sırasında girdiğiniz adresi kullanabilirsiniz.</p>
           </div>
         )}
 

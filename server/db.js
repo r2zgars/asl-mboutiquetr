@@ -39,17 +39,6 @@ db.exec(`
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE IF NOT EXISTS verification_codes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    purpose TEXT NOT NULL,
-    target TEXT NOT NULL,
-    code_hash TEXT NOT NULL,
-    expires_at TEXT NOT NULL,
-    attempts INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-  );
 
   CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +64,7 @@ db.exec(`
     sizes TEXT NOT NULL DEFAULT '[]',
     colors TEXT NOT NULL DEFAULT '[]',
     variant_images TEXT NOT NULL DEFAULT '[]',
+    purchase_url TEXT NOT NULL DEFAULT '',
     featured INTEGER NOT NULL DEFAULT 0,
     active INTEGER NOT NULL DEFAULT 1,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -119,6 +109,9 @@ db.exec(`
 const productColumns = db.prepare("PRAGMA table_info(products)").all().map((column) => column.name);
 if (!productColumns.includes("variant_images")) {
   db.exec("ALTER TABLE products ADD COLUMN variant_images TEXT NOT NULL DEFAULT '[]'");
+}
+if (!productColumns.includes("purchase_url")) {
+  db.exec("ALTER TABLE products ADD COLUMN purchase_url TEXT NOT NULL DEFAULT ''");
 }
 
 const userColumns = db.prepare("PRAGMA table_info(users)").all().map((column) => column.name);
@@ -235,6 +228,12 @@ function seed() {
       shippingFee: 89.9,
       freeShippingThreshold: 1500,
       returnDays: 15,
+      trustTitle1: "Güvenli alışveriş",
+      trustText1: "256 Bit SSL koruması",
+      trustTitle2: "Hızlı gönderim",
+      trustText2: "Özenli ve takipli teslimat",
+      trustTitle3: "Kolay iade",
+      trustText3: "3 iş günü içinde",
       footerNote: "Özenle seçilmiş zamansız parçalar.",
       primaryColor: "#0a0a0a",
       accentColor: "#a4743b"

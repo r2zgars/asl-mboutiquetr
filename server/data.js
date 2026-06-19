@@ -55,6 +55,7 @@ function productPayload(product) {
     sizes: product.sizes,
     colors: product.colors,
     variant_images: product.variantImages,
+    purchase_url: product.purchaseUrl,
     featured: product.featured,
     active: product.active
   };
@@ -189,7 +190,6 @@ export async function updateUserEmailVerified(id) {
 
 export async function updateCustomerProfile({ id, name, phone, email, clearEmailVerification }) {
   const payload = { name, phone, email };
-  if (clearEmailVerification) payload.email_verified_at = null;
   const { data } = await run(
     client().from("users").update(payload).eq("id", Number(id)).select("*").single()
   );
@@ -227,48 +227,6 @@ export async function getSessionUser(token, role) {
   const user = session?.users;
   if (!user || user.role !== role) return null;
   return { ...user };
-}
-
-export async function createVerificationCode({ userId, purpose, target, codeHash, expiresAt }) {
-  await run(client().from("verification_codes").delete().eq("user_id", Number(userId)).eq("purpose", purpose));
-  await run(client().from("verification_codes").insert({
-    user_id: Number(userId),
-    purpose,
-    target,
-    code_hash: codeHash,
-    expires_at: expiresAt
-  }));
-}
-
-export async function deleteVerificationCodes(userId, purpose) {
-  await run(client().from("verification_codes").delete().eq("user_id", Number(userId)).eq("purpose", purpose));
-}
-
-export async function getLatestVerificationCode({ userId, purpose, target }) {
-  return maybe(
-    client()
-      .from("verification_codes")
-      .select("*")
-      .eq("user_id", Number(userId))
-      .eq("purpose", purpose)
-      .eq("target", target)
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-  );
-}
-
-export async function deleteVerificationCode(id) {
-  await run(client().from("verification_codes").delete().eq("id", Number(id)));
-}
-
-export async function incrementVerificationAttempts(record) {
-  await run(
-    client()
-      .from("verification_codes")
-      .update({ attempts: Number(record.attempts || 0) + 1 })
-      .eq("id", Number(record.id))
-  );
 }
 
 export async function uniqueSlug(table, desired, currentId = null) {
@@ -309,6 +267,7 @@ export async function normalizeProductBody(body, currentId = null) {
           }))
           .filter((variant) => variant.images.length)
       : [],
+    purchaseUrl: String(body.purchaseUrl || body.purchase_url || "").trim(),
     featured: Boolean(body.featured),
     active: body.active === false ? false : true
   };

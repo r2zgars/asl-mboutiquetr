@@ -18,15 +18,8 @@ PUBLIC_SITE_URL=https://alanadiniz.com
 SUPABASE_URL=https://proje-ref.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 SUPABASE_STORAGE_BUCKET=aslim-boutique
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=mail@example.com
-SMTP_PASS=...
-SMTP_FROM="Aslim Boutique <mail@example.com>"
 ```
 
-SMTP yoksa e-posta doğrulama kodu canlıda e-postaya gitmez. Sipariş/ödeme akışı olmadığı için ödeme değişkeni eklemeyin.
 
 ## 3. Deploy
 

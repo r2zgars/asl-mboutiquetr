@@ -6,7 +6,6 @@ Referans Ikas mağazasının görsel dilini temel alan, bağımsız yönetim pan
 
 - Mobil ve masaüstü uyumlu mağaza vitrini
 - Müşteri kayıt, giriş, hesabım ve favoriler
-- Sipariş öncesi e-posta doğrulama altyapısı
 - Ürün, kategori, stok, fiyat, görsel, logo, duyuru ve site ayarları yönetimi
 - Renk/beden kombinasyonlarına özel ürün görselleri
 - Stokta olmayan ürünlerde şeffaf "stokta yok" etiketi
@@ -34,7 +33,7 @@ E-posta: aslimboutique@gmail.com
 
 ## Ortam Değişkenleri
 
-`.env.example` dosyasını `.env` adıyla çoğaltıp Supabase ve SMTP bilgilerini girin.
+`.env.example` dosyasını `.env` adıyla çoğaltıp Supabase bilgilerini girin.
 
 En kritik değişkenler:
 

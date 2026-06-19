@@ -4,10 +4,9 @@ import multer from "multer";
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createHash, randomBytes, randomInt } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import * as data from "./data.js";
 import { hashPassword, safeJson, verifyPassword } from "./utils.js";
-import { sendVerificationEmail } from "./mailer.js";
 import { isSupabaseStorageEnabled, uploadImage } from "./storage.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -101,65 +100,6 @@ function publicCustomer(customer) {
   };
 }
 
-function verificationHash(userId, purpose, code) {
-  return createHash("sha256").update(`${userId}:${purpose}:${code}`).digest("hex");
-}
-
-async function issueVerificationCode(customer, purpose) {
-  const code = String(randomInt(100000, 1000000));
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-  const target = customer.email;
-
-  await data.createVerificationCode({
-    userId: customer.id,
-    purpose,
-    target,
-    codeHash: verificationHash(customer.id, purpose, code),
-    expiresAt
-  });
-
-  try {
-    const result = await sendVerificationEmail({
-          email: customer.email,
-          name: customer.name,
-          code,
-          purpose
-        });
-    return {
-      sent: result.sent,
-      developmentCode: !result.sent && process.env.NODE_ENV !== "production" ? code : undefined
-    };
-  } catch (error) {
-    await data.deleteVerificationCodes(customer.id, purpose);
-    throw error;
-  }
-}
-
-async function consumeVerificationCode(customer, purpose, code) {
-  const target = customer.email;
-  const record = await data.getLatestVerificationCode({
-    userId: customer.id,
-    purpose,
-    target
-  });
-
-  if (!record || new Date(record.expires_at).getTime() < Date.now()) {
-    if (record) await data.deleteVerificationCode(record.id);
-    return { ok: false, message: "Doğrulama kodunun süresi dolmuş. Yeni kod isteyin." };
-  }
-  if (Number(record.attempts || 0) >= 5) {
-    await data.deleteVerificationCode(record.id);
-    return { ok: false, message: "Çok fazla hatalı deneme yapıldı. Yeni kod isteyin." };
-  }
-  if (verificationHash(customer.id, purpose, String(code || "").trim()) !== record.code_hash) {
-    await data.incrementVerificationAttempts(record);
-    return { ok: false, message: "Doğrulama kodu hatalı." };
-  }
-
-  await data.deleteVerificationCode(record.id);
-  return { ok: true };
-}
-
 function customerCookie(token, maxAge = 7 * 24 * 60 * 60) {
   return `aslim_customer=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${cookieSecure}`;
 }
@@ -210,19 +150,11 @@ app.post("/api/auth/register", asyncRoute(async (request, response) => {
   }
 
   const customer = await data.createUser({ email, name, passwordHash: hashPassword(password), role: "customer" });
+  const verifiedCustomer = await data.updateUserEmailVerified(customer.id);
   const session = makeSession();
-  await data.createSession({ ...session, userId: customer.id });
+  await data.createSession({ ...session, userId: verifiedCustomer.id });
   response.setHeader("Set-Cookie", customerCookie(session.token));
-  try {
-    const verification = await issueVerificationCode(customer, "email_verification");
-    response.status(201).json({ ...publicCustomer(customer), ...verification });
-  } catch {
-    response.status(201).json({
-      ...publicCustomer(customer),
-      emailDeliveryFailed: true,
-      message: "Hesabınız oluşturuldu fakat doğrulama e-postası gönderilemedi. Hesabım sayfasından tekrar deneyin."
-    });
-  }
+  response.status(201).json(publicCustomer(verifiedCustomer));
 }));
 
 app.post("/api/auth/login", asyncRoute(async (request, response) => {
@@ -263,31 +195,6 @@ app.post("/api/auth/logout", asyncRoute(async (request, response) => {
   response.json({ ok: true });
 }));
 
-app.post("/api/account/verification/send", requireCustomer, asyncRoute(async (request, response) => {
-  const purpose = request.body.purpose === "password_change" ? "password_change" : "email_verification";
-  if (purpose === "email_verification" && request.customer.email_verified_at) {
-    return response.status(400).json({ message: "E-posta adresiniz zaten doğrulanmış." });
-  }
-  try {
-    const result = await issueVerificationCode(request.customer, purpose);
-    response.json({
-      ...result,
-      message: result.sent
-        ? "Doğrulama kodu e-posta adresinize gönderildi."
-        : "SMTP ayarı olmadığı için kod yalnızca yerel geliştirme ekranında gösterildi."
-    });
-  } catch (error) {
-    response.status(502).json({ message: error.message || "Doğrulama e-postası gönderilemedi. SMTP ayarlarını kontrol edin." });
-  }
-}));
-
-app.post("/api/account/verification/confirm", requireCustomer, asyncRoute(async (request, response) => {
-  const result = await consumeVerificationCode(request.customer, "email_verification", request.body.code);
-  if (!result.ok) return response.status(400).json({ message: result.message });
-
-  const customer = await data.updateUserEmailVerified(request.customer.id);
-  response.json({ customer: publicCustomer(customer), message: "E-posta adresiniz doğrulandı." });
-}));
 app.put("/api/account/profile", requireCustomer, asyncRoute(async (request, response) => {
   const name = String(request.body.name || "").trim();
   const phone = String(request.body.phone || "").trim();
@@ -304,29 +211,15 @@ app.put("/api/account/profile", requireCustomer, asyncRoute(async (request, resp
     return response.status(409).json({ message: "Bu e-posta adresi başka bir hesapta kullanılıyor." });
   }
 
-  const emailChanged = email !== request.customer.email;
   const customer = await data.updateCustomerProfile({
     id: request.customer.id,
     name,
     phone,
-    email,
-    clearEmailVerification: emailChanged
+    email
   });
-  let verification = {};
-  if (emailChanged) {
-    try {
-      verification = await issueVerificationCode(customer, "email_verification");
-    } catch {
-      verification = { emailDeliveryFailed: true };
-    }
-  }
   response.json({
     customer: publicCustomer(customer),
-    emailChanged,
-    ...verification,
-    message: emailChanged
-      ? "Bilgileriniz güncellendi. Yeni e-posta adresinizi doğrulayın."
-      : "Kişisel bilgileriniz güncellendi."
+    message: "Kişisel bilgileriniz güncellendi."
   });
 }));
 app.put("/api/account/password", requireCustomer, asyncRoute(async (request, response) => {
@@ -339,19 +232,8 @@ app.put("/api/account/password", requireCustomer, asyncRoute(async (request, res
   const currentPasswordValid = request.body.currentPassword
     ? verifyPassword(String(request.body.currentPassword), user.password_hash)
     : false;
-  let codeValid = false;
-  let codeError = "";
-
-  if (!currentPasswordValid && request.body.verificationCode) {
-    const result = await consumeVerificationCode(request.customer, "password_change", request.body.verificationCode);
-    codeValid = result.ok;
-    codeError = result.message || "";
-  }
-
-  if (!currentPasswordValid && !codeValid) {
-    return response.status(400).json({
-      message: codeError || "Mevcut şifrenizi veya e-posta doğrulama kodunu doğru girin."
-    });
+  if (!currentPasswordValid) {
+    return response.status(400).json({ message: "Mevcut şifrenizi doğru girin." });
   }
 
   await data.updateUserPassword(user.id, hashPassword(newPassword));
