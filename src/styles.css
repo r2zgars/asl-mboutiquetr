@@ -3773,16 +3773,17 @@ img {
     grid-template-columns: 1fr;
     justify-items: center;
     gap: 12px;
-    padding: 0 16px;
+    padding: 0 20px;
     overflow: visible;
   }
 
   .product-gallery img {
-    width: 100%;
+    width: min(100%, 360px);
     min-width: 0;
-    max-width: 430px;
-    aspect-ratio: 4 / 5;
-    object-fit: contain;
+    height: 480px;
+    max-height: 58vh;
+    aspect-ratio: auto;
+    object-fit: cover;
     object-position: center;
     scroll-snap-align: unset;
   }
@@ -3794,8 +3795,7 @@ img {
   }
 
   .product-info .product-category,
-  .product-price,
-  .installment {
+  .product-price {
     justify-content: center;
     text-align: center;
   }
@@ -3816,10 +3816,23 @@ img {
   .option-group,
   .product-description,
   .stock-note {
-    text-align: left;
+    text-align: center;
+  }
+
+  .option-group > div:first-child {
+    justify-content: center;
+  }
+
+  .option-group > div:first-child span {
+    display: none;
+  }
+
+  .choice-row {
+    justify-content: center;
   }
 
   .product-page .purchase-row {
+    justify-items: center;
     position: sticky;
     z-index: 20;
     bottom: calc(52px + env(safe-area-inset-bottom));
@@ -3830,6 +3843,16 @@ img {
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.07);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
+  }
+
+  .product-page .add-button {
+    width: min(100%, 260px);
+  }
+
+  .product-description p {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 34ch;
   }
 
   .product-benefits {

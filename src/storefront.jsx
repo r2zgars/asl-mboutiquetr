@@ -488,7 +488,6 @@ export function ProductPage() {
           <strong>{formatPrice(product.price)}</strong>
           {product.compare_price > product.price && <del>{formatPrice(product.compare_price)}</del>}
         </div>
-        <p className="installment">Peşin fiyatına 3 taksit imkânı</p>
         {product.colors?.length > 0 && (
           <div className="option-group">
             <div><strong>Renk</strong><span>{color}</span></div>
@@ -499,7 +498,7 @@ export function ProductPage() {
         )}
         {product.sizes?.length > 0 && (
           <div className="option-group">
-            <div><strong>Beden</strong><button className="size-guide">Beden rehberi</button></div>
+            <div><strong>Beden</strong></div>
             <div className="choice-row">
               {product.sizes.map((item) => <button className={size === item ? "selected" : ""} onClick={() => setSize(item)} key={item}>{item}</button>)}
             </div>
