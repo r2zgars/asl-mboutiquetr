@@ -328,22 +328,29 @@ function SectionHeading({ eyebrow, title, link }) {
 function FavoriteButton({ productId, className = "" }) {
   const { customer, favoriteIds, toggleFavorite } = useStore();
   const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
   const favorite = favoriteIds.includes(Number(productId));
 
   async function toggle(event) {
     event.preventDefault();
     event.stopPropagation();
+    if (saving) return;
     if (!customer) {
       navigate("/giris");
       return;
     }
-    await toggleFavorite(productId);
+    setSaving(true);
+    try {
+      await toggleFavorite(productId);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <button
       type="button"
-      className={`favorite-button ${favorite ? "active" : ""} ${className}`}
+      className={`favorite-button ${favorite ? "active" : ""} ${saving ? "saving" : ""} ${className}`}
       onClick={toggle}
       aria-label={favorite ? "Beğenilenlerden çıkar" : "Beğenilenlere ekle"}
       title={favorite ? "Beğenilenlerden çıkar" : "Beğenilenlere ekle"}

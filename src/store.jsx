@@ -48,12 +48,25 @@ export function StoreProvider({ children }) {
     if (!customer) return false;
     const normalizedId = Number(productId);
     const favorite = favoriteIds.includes(normalizedId);
+    setFavoriteIds((current) =>
+      favorite
+        ? current.filter((id) => id !== normalizedId)
+        : [...new Set([...current, normalizedId])]
+    );
     if (favorite) {
-      await api(`/api/account/favorites/${normalizedId}`, { method: "DELETE" });
-      setFavoriteIds((current) => current.filter((id) => id !== normalizedId));
+      try {
+        await api(`/api/account/favorites/${normalizedId}`, { method: "DELETE" });
+      } catch (error) {
+        setFavoriteIds((current) => [...new Set([...current, normalizedId])]);
+        throw error;
+      }
     } else {
-      await api(`/api/account/favorites/${normalizedId}`, { method: "POST" });
-      setFavoriteIds((current) => [...new Set([...current, normalizedId])]);
+      try {
+        await api(`/api/account/favorites/${normalizedId}`, { method: "POST" });
+      } catch (error) {
+        setFavoriteIds((current) => current.filter((id) => id !== normalizedId));
+        throw error;
+      }
     }
     return !favorite;
   }
