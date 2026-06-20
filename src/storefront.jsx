@@ -554,6 +554,12 @@ export function ProductPage() {
 export function InfoPage({ type }) {
   const { settings } = useStore();
   const isContact = type === "contact";
+  const faqItems = (settings.faqItems?.length ? settings.faqItems : [
+    {
+      question: "Nasıl satın alabilirim?",
+      answer: "Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir."
+    }
+  ]).filter((item) => item.question && item.answer);
   return (
     <div className="info-page">
       <p className="eyebrow">ASLIM BOUTIQUE</p>
@@ -566,9 +572,12 @@ export function InfoPage({ type }) {
         </div>
       ) : (
         <div className="faq-list">
-          <details open><summary>Kargom ne zaman gönderilir?</summary><p>Siparişler genellikle 1-3 iş günü içinde hazırlanıp kargoya teslim edilir.</p></details>
-          <details><summary>İade süresi kaç gün?</summary><p>Ürünlerinizi teslim aldıktan sonra {settings.returnDays || 15} iş günü içinde iade talebi oluşturabilirsiniz.</p></details>
-          <details><summary>Nasıl satın alabilirim?</summary><p>Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir.</p></details>
+          {faqItems.map((item, index) => (
+            <details key={`${item.question}-${index}`} open={index === 0}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
         </div>
       )}
     </div>

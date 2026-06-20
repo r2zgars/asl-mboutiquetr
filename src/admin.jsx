@@ -555,6 +555,26 @@ export function AdminSettings() {
     setForm({ ...form, announcements: announcements.length ? announcements : [""] });
   }
 
+  function faqItems() {
+    return form.faqItems?.length ? form.faqItems : [
+      { question: "Nasıl satın alabilirim?", answer: "Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir." }
+    ];
+  }
+
+  function updateFaq(index, field, value) {
+    const items = faqItems().map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item);
+    setForm({ ...form, faqItems: items });
+  }
+
+  function addFaq() {
+    setForm({ ...form, faqItems: [...faqItems(), { question: "", answer: "" }] });
+  }
+
+  function removeFaq(index) {
+    const items = faqItems().filter((_, itemIndex) => itemIndex !== index);
+    setForm({ ...form, faqItems: items.length ? items : [{ question: "", answer: "" }] });
+  }
+
   async function upload(event, field) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -679,6 +699,23 @@ export function AdminSettings() {
             <label>2. alt metin<input name="trustText2" value={form.trustText2 || ""} onChange={update} /></label>
             <label>3. başlık<input name="trustTitle3" value={form.trustTitle3 || ""} onChange={update} /></label>
             <label>3. alt metin<input name="trustText3" value={form.trustText3 || ""} onChange={update} /></label>
+          </div>
+        </SettingsSection>
+
+        <SettingsSection title="Sıkça sorulan sorular" description="SSS sayfasında görünen soru ve cevapları düzenleyin.">
+          <div className="faq-editor">
+            <div className="image-manager-head">
+              <div><strong>SSS içerikleri</strong><small>Boş bırakılan soru veya cevaplar mağazada gösterilmez.</small></div>
+              <button type="button" className="admin-secondary" onClick={addFaq}><Plus size={16} /> Soru ekle</button>
+            </div>
+            {faqItems().map((item, index) => (
+              <div className="faq-row" key={index}>
+                <span>{index + 1}</span>
+                <label>Soru<input value={item.question || ""} onChange={(event) => updateFaq(index, "question", event.target.value)} /></label>
+                <label>Cevap<textarea rows="2" value={item.answer || ""} onChange={(event) => updateFaq(index, "answer", event.target.value)} /></label>
+                <button type="button" onClick={() => removeFaq(index)} aria-label="Soruyu sil"><Trash2 size={17} /></button>
+              </div>
+            ))}
           </div>
         </SettingsSection>
 

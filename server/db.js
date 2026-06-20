@@ -236,6 +236,12 @@ function seed() {
       trustText2: "Özenli ve takipli teslimat",
       trustTitle3: "Kolay iade",
       trustText3: "3 iş günü içinde",
+      faqItems: [
+        {
+          question: "Nasıl satın alabilirim?",
+          answer: "Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir."
+        }
+      ],
       footerNote: "Özenle seçilmiş zamansız parçalar.",
       primaryColor: "#0a0a0a",
       accentColor: "#a4743b"

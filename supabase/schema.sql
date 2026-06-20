@@ -134,6 +134,7 @@ insert into public.settings (key, value) values
   ('trustText2', '"Özenli ve takipli teslimat"'::jsonb),
   ('trustTitle3', '"Kolay iade"'::jsonb),
   ('trustText3', '"3 iş günü içinde"'::jsonb),
+  ('faqItems', '[{"question":"Nasıl satın alabilirim?","answer":"Ürün sayfasındaki Satın Al butonu sizi WhatsApp görüşmesine yönlendirir."}]'::jsonb),
   ('footerNote', '"Özenle seçilmiş zamansız parçalar."'::jsonb),
   ('primaryColor', '"#0a0a0a"'::jsonb),
   ('accentColor', '"#a4743b"'::jsonb)
