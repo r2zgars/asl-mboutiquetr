@@ -55,7 +55,6 @@ function productPayload(product) {
     sizes: product.sizes,
     colors: product.colors,
     variant_images: product.variantImages,
-    purchase_url: product.purchaseUrl,
     featured: product.featured,
     active: product.active
   };
@@ -267,7 +266,6 @@ export async function normalizeProductBody(body, currentId = null) {
           }))
           .filter((variant) => variant.images.length)
       : [],
-    purchaseUrl: String(body.purchaseUrl || body.purchase_url || "").trim(),
     featured: Boolean(body.featured),
     active: body.active === false ? false : true
   };

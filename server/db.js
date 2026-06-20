@@ -64,7 +64,6 @@ db.exec(`
     sizes TEXT NOT NULL DEFAULT '[]',
     colors TEXT NOT NULL DEFAULT '[]',
     variant_images TEXT NOT NULL DEFAULT '[]',
-    purchase_url TEXT NOT NULL DEFAULT '',
     featured INTEGER NOT NULL DEFAULT 0,
     active INTEGER NOT NULL DEFAULT 1,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -109,9 +108,6 @@ db.exec(`
 const productColumns = db.prepare("PRAGMA table_info(products)").all().map((column) => column.name);
 if (!productColumns.includes("variant_images")) {
   db.exec("ALTER TABLE products ADD COLUMN variant_images TEXT NOT NULL DEFAULT '[]'");
-}
-if (!productColumns.includes("purchase_url")) {
-  db.exec("ALTER TABLE products ADD COLUMN purchase_url TEXT NOT NULL DEFAULT ''");
 }
 
 const userColumns = db.prepare("PRAGMA table_info(users)").all().map((column) => column.name);

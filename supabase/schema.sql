@@ -42,7 +42,6 @@ create table if not exists public.products (
   sizes jsonb not null default '[]'::jsonb,
   colors jsonb not null default '[]'::jsonb,
   variant_images jsonb not null default '[]'::jsonb,
-  purchase_url text not null default '',
   featured boolean not null default false,
   active boolean not null default true,
   created_at timestamptz not null default now(),

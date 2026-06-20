@@ -72,6 +72,11 @@ function productPath(product) {
   return product.category_slug ? `/kategori/${product.category_slug}/${product.slug}` : `/urun/${product.slug}`;
 }
 
+function productWhatsappMessage(product) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://aslimboutique.vercel.app";
+  return `${origin}${productPath(product)} Bu ürün hakkında bilgi almak istiyorum.`;
+}
+
 function AnnouncementBar({ settings }) {
   const configured = Array.isArray(settings.announcements) ? settings.announcements.filter(Boolean) : [];
   const messages = configured.length ? configured : [settings.announcement || "AÇILIŞA ÖZEL İNDİRİM"];
@@ -461,7 +466,7 @@ export function SearchPage() {
 
 export function ProductPage() {
   const { slug, productSlug } = useParams();
-  const { products, loading } = useStore();
+  const { products, loading, settings } = useStore();
   const product = products.find((item) => item.slug === (productSlug || slug));
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
@@ -477,7 +482,7 @@ export function ProductPage() {
 
   if (loading) return <Loading />;
   if (!product) return <NotFound />;
-  const buyHref = String(product.purchase_url || "").trim();
+  const buyHref = whatsappUrl(settings, productWhatsappMessage(product));
 
   return (
     <div className="product-page reveal">
@@ -523,12 +528,10 @@ export function ProductPage() {
           </div>
         )}
         <div className="purchase-row">
-          {product.stock > 0 && buyHref ? (
+          {product.stock > 0 ? (
             <a className="button dark add-button" href={buyHref} target="_blank" rel="noreferrer">
               SATIN AL
             </a>
-          ) : product.stock > 0 ? (
-            <button className="button dark add-button" disabled>SATIN AL LİNKİ YOK</button>
           ) : (
             <button className="button dark add-button" disabled>STOKTA YOK</button>
           )}

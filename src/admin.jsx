@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+﻿import { Fragment, useEffect, useState } from "react";
 import {
   BarChart3,
   Boxes,
@@ -52,16 +52,16 @@ export function AdminLogin() {
 
   return (
     <div className="admin-login">
-      <Link to="/" className="admin-login-brand"><img src={settings.logo || "/images/logo.webp"} alt="Aslım Boutique" /></Link>
+      <Link to="/" className="admin-login-brand"><img src={settings.logo || "/images/logo.webp"} alt="AslÄ±m Boutique" /></Link>
       <form onSubmit={submit}>
-        <p className="eyebrow">YÖNETİM PANELİ</p>
-        <h1>Tekrar hoş geldiniz.</h1>
-        <p>Mağazanızı yönetmek için hesabınıza giriş yapın.</p>
+        <p className="eyebrow">YÃ–NETÄ°M PANELÄ°</p>
+        <h1>Tekrar hoÅŸ geldiniz.</h1>
+        <p>MaÄŸazanÄ±zÄ± yÃ¶netmek iÃ§in hesabÄ±nÄ±za giriÅŸ yapÄ±n.</p>
         {error && <div className="form-error">{error}</div>}
         <label>E-posta<input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} autoComplete="email" required /></label>
-        <label>Şifre<input type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} autoComplete="current-password" required /></label>
-        <button className="button dark full" disabled={loading}>{loading ? "GİRİŞ YAPILIYOR..." : "GİRİŞ YAP"}</button>
-        <small>Yönetim paneline e-posta adresiniz ve şifrenizle giriş yapın.</small>
+        <label>Åifre<input type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} autoComplete="current-password" required /></label>
+        <button className="button dark full" disabled={loading}>{loading ? "GÄ°RÄ°Å YAPILIYOR..." : "GÄ°RÄ°Å YAP"}</button>
+        <small>YÃ¶netim paneline e-posta adresiniz ve ÅŸifrenizle giriÅŸ yapÄ±n.</small>
       </form>
     </div>
   );
@@ -87,22 +87,22 @@ export function AdminLayout() {
     navigate("/admin/giris");
   }
 
-  if (loading) return <div className="admin-loading">Panel hazırlanıyor...</div>;
+  if (loading) return <div className="admin-loading">Panel hazÄ±rlanÄ±yor...</div>;
   if (!admin) return null;
 
   const links = [
-    ["/admin", "Genel Bakış", LayoutDashboard, true],
-    ["/admin/urunler", "Ürünler", Package],
+    ["/admin", "Genel BakÄ±ÅŸ", LayoutDashboard, true],
+    ["/admin/urunler", "ÃœrÃ¼nler", Package],
     ["/admin/kategoriler", "Kategoriler", Tags],
-    ["/admin/siparisler", "Siparişler", ShoppingCart],
-    ["/admin/ayarlar", "Site Ayarları", Settings]
+    ["/admin/siparisler", "SipariÅŸler", ShoppingCart],
+    ["/admin/ayarlar", "Site AyarlarÄ±", Settings]
   ];
 
   return (
     <div className="admin-shell">
       <aside className={menuOpen ? "open" : ""}>
         <div className="admin-logo">
-          <img src={settings.logo || "/images/logo.webp"} alt="Aslım Boutique" />
+          <img src={settings.logo || "/images/logo.webp"} alt="AslÄ±m Boutique" />
           <button className="icon-button admin-menu-close" onClick={() => setMenuOpen(false)}><X /></button>
         </div>
         <nav>
@@ -113,14 +113,14 @@ export function AdminLayout() {
           ))}
         </nav>
         <div className="admin-sidebar-bottom">
-          <a href="/" target="_blank"><ExternalLink size={18} /> Mağazayı Gör</a>
-          <button onClick={logout}><LogOut size={18} /> Çıkış Yap</button>
+          <a href="/" target="_blank"><ExternalLink size={18} /> MaÄŸazayÄ± GÃ¶r</a>
+          <button onClick={logout}><LogOut size={18} /> Ã‡Ä±kÄ±ÅŸ Yap</button>
         </div>
       </aside>
       <div className="admin-main">
         <header className="admin-topbar">
           <button className="icon-button admin-menu-toggle" onClick={() => setMenuOpen(true)}><Menu /></button>
-          <div><span>Mağaza yönetimi</span><strong>{admin.name}</strong></div>
+          <div><span>MaÄŸaza yÃ¶netimi</span><strong>{admin.name}</strong></div>
         </header>
         <Outlet context={{ admin }} />
       </div>
@@ -134,20 +134,20 @@ export function AdminDashboard() {
   if (!stats) return <AdminPageLoading />;
 
   const cards = [
-    ["Toplam ürün", stats.productCount, Boxes, "Ürün kataloğunuz"],
-    ["Toplam sipariş", stats.orderCount, ShoppingCart, "Tüm zamanlar"],
-    ["Tüm ciro", formatPrice(stats.revenuePeriods?.all ?? stats.revenue), BarChart3, "İptaller hariç"],
-    ["Kritik stok", stats.lowStock, CircleAlert, "5 adet ve altı"]
+    ["Toplam Ã¼rÃ¼n", stats.productCount, Boxes, "ÃœrÃ¼n kataloÄŸunuz"],
+    ["Toplam sipariÅŸ", stats.orderCount, ShoppingCart, "TÃ¼m zamanlar"],
+    ["TÃ¼m ciro", formatPrice(stats.revenuePeriods?.all ?? stats.revenue), BarChart3, "Ä°ptaller hariÃ§"],
+    ["Kritik stok", stats.lowStock, CircleAlert, "5 adet ve altÄ±"]
   ];
   const revenueCards = [
     ["1 hafta", stats.revenuePeriods?.week ?? 0],
     ["1 ay", stats.revenuePeriods?.month ?? 0],
-    ["1 yıl", stats.revenuePeriods?.year ?? 0],
-    ["Tüm zamanlar", stats.revenuePeriods?.all ?? stats.revenue]
+    ["1 yÄ±l", stats.revenuePeriods?.year ?? 0],
+    ["TÃ¼m zamanlar", stats.revenuePeriods?.all ?? stats.revenue]
   ];
 
   return (
-    <AdminPage title="Genel Bakış" subtitle="Mağazanızın bugünkü durumuna hızlıca göz atın.">
+    <AdminPage title="Genel BakÄ±ÅŸ" subtitle="MaÄŸazanÄ±zÄ±n bugÃ¼nkÃ¼ durumuna hÄ±zlÄ±ca gÃ¶z atÄ±n.">
       <div className="stat-grid">
         {cards.map(([label, value, Icon, note]) => (
           <article className="stat-card" key={label}>
@@ -159,7 +159,7 @@ export function AdminDashboard() {
       </div>
       <section className="admin-card revenue-card">
         <div className="admin-card-head">
-          <div><h2>Ciro takibi</h2><p>İptal siparişler hariç dönemsel gelir</p></div>
+          <div><h2>Ciro takibi</h2><p>Ä°ptal sipariÅŸler hariÃ§ dÃ¶nemsel gelir</p></div>
           <BarChart3 size={20} />
         </div>
         <div className="revenue-grid">
@@ -173,8 +173,8 @@ export function AdminDashboard() {
       </section>
       <section className="admin-card">
         <div className="admin-card-head">
-          <div><h2>Son siparişler</h2><p>En güncel müşteri siparişleri</p></div>
-          <Link to="/admin/siparisler">Tümünü gör <ChevronRight size={17} /></Link>
+          <div><h2>Son sipariÅŸler</h2><p>En gÃ¼ncel mÃ¼ÅŸteri sipariÅŸleri</p></div>
+          <Link to="/admin/siparisler">TÃ¼mÃ¼nÃ¼ gÃ¶r <ChevronRight size={17} /></Link>
         </div>
         <OrdersTable orders={stats.recentOrders} compact />
       </section>
@@ -201,7 +201,7 @@ export function AdminProducts() {
   useEffect(() => { load(); }, []);
 
   async function remove(product) {
-    if (!window.confirm(`“${product.name}” ürününü silmek istediğinizden emin misiniz?`)) return;
+    if (!window.confirm(`â€œ${product.name}â€ Ã¼rÃ¼nÃ¼nÃ¼ silmek istediÄŸinizden emin misiniz?`)) return;
     await api(`/api/admin/products/${product.id}`, { method: "DELETE" });
     await load();
     refreshStore();
@@ -209,14 +209,14 @@ export function AdminProducts() {
 
   return (
     <AdminPage
-      title="Ürünler"
-      subtitle={`${products.length} ürün katalogda kayıtlı.`}
-      action={<button className="admin-primary" onClick={() => { setEditing(null); setOpen(true); }}><Plus size={18} /> Yeni ürün</button>}
+      title="ÃœrÃ¼nler"
+      subtitle={`${products.length} Ã¼rÃ¼n katalogda kayÄ±tlÄ±.`}
+      action={<button className="admin-primary" onClick={() => { setEditing(null); setOpen(true); }}><Plus size={18} /> Yeni Ã¼rÃ¼n</button>}
     >
       <section className="admin-card table-card">
         <div className="admin-table-wrap">
           <table className="admin-table product-table">
-            <thead><tr><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th /></tr></thead>
+            <thead><tr><th>ÃœrÃ¼n</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th /></tr></thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product.id}>
@@ -260,16 +260,16 @@ function loadImageFile(file) {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error("Görsel okunamadı. Farklı bir fotoğraf deneyin."));
+      reject(new Error("GÃ¶rsel okunamadÄ±. FarklÄ± bir fotoÄŸraf deneyin."));
     };
     image.src = url;
   });
 }
 
 async function prepareImageFile(file) {
-  if (!file.type.startsWith("image/")) throw new Error("Lütfen geçerli bir görsel seçin.");
+  if (!file.type.startsWith("image/")) throw new Error("LÃ¼tfen geÃ§erli bir gÃ¶rsel seÃ§in.");
   if (file.type === "image/gif") {
-    if (file.size > maxUploadBytes) throw new Error("GIF dosyası çok büyük. Daha küçük bir görsel seçin.");
+    if (file.size > maxUploadBytes) throw new Error("GIF dosyasÄ± Ã§ok bÃ¼yÃ¼k. Daha kÃ¼Ã§Ã¼k bir gÃ¶rsel seÃ§in.");
     return file;
   }
 
@@ -293,7 +293,7 @@ async function prepareImageFile(file) {
     if (blob.size <= maxUploadBytes) break;
   }
   if (!bestBlob || bestBlob.size > maxUploadBytes) {
-    throw new Error("Görsel çok büyük. Fotoğrafı biraz kırpıp tekrar deneyin.");
+    throw new Error("GÃ¶rsel Ã§ok bÃ¼yÃ¼k. FotoÄŸrafÄ± biraz kÄ±rpÄ±p tekrar deneyin.");
   }
 
   const name = file.name.replace(/\.[^.]+$/, "") || "gorsel";
@@ -321,7 +321,6 @@ function ProductModal({ product, categories, onClose, onSaved }) {
     sizes: product?.sizes || [],
     colors: product?.colors || [],
     variantImages: product?.variant_images || [],
-    purchaseUrl: product?.purchase_url || "",
     featured: product?.featured || false,
     active: product?.active ?? true
   });
@@ -358,7 +357,7 @@ function ProductModal({ product, categories, onClose, onSaved }) {
     event.target.value = "";
     if (!file) return;
     if (!variantColor && !variantSize) {
-      setError("Varyant görseli için en az bir renk veya beden seçin.");
+      setError("Varyant gÃ¶rseli iÃ§in en az bir renk veya beden seÃ§in.");
       return;
     }
     setUploading(true);
@@ -419,24 +418,23 @@ function ProductModal({ product, categories, onClose, onSaved }) {
   }
 
   return (
-    <Modal title={product ? "Ürünü düzenle" : "Yeni ürün ekle"} onClose={onClose}>
+    <Modal title={product ? "ÃœrÃ¼nÃ¼ dÃ¼zenle" : "Yeni Ã¼rÃ¼n ekle"} onClose={onClose}>
       <form className="admin-form" onSubmit={submit}>
         {error && <div className="form-error">{error}</div>}
         <div className="form-grid">
-          <label className="wide">Ürün adı<input name="name" value={form.name} onChange={update} required /></label>
-          <label>URL kısa adı<input name="slug" value={form.slug} onChange={update} placeholder="Otomatik oluşturulur" /></label>
+          <label className="wide">ÃœrÃ¼n adÄ±<input name="name" value={form.name} onChange={update} required /></label>
+          <label>URL kÄ±sa adÄ±<input name="slug" value={form.slug} onChange={update} placeholder="Otomatik oluÅŸturulur" /></label>
           <label>Stok kodu<input name="sku" value={form.sku} onChange={update} /></label>
           <label>Kategori<select name="categoryId" value={form.categoryId} onChange={update}><option value="">Kategorisiz</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
           <label>Stok<input type="number" min="0" name="stock" value={form.stock} onChange={update} /></label>
-          <label>Satış fiyatı<input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} required /></label>
-          <label>İndirim öncesi fiyat<input type="number" min="0" step="0.01" name="comparePrice" value={form.comparePrice} onChange={update} /></label>
-          <label className="wide">Satın al linki<input type="url" name="purchaseUrl" value={form.purchaseUrl} onChange={update} placeholder="https://..." /></label>
-          <label className="wide">Açıklama<textarea name="description" rows="4" value={form.description} onChange={update} /></label>
+          <label>SatÄ±ÅŸ fiyatÄ±<input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} required /></label>
+          <label>Ä°ndirim Ã¶ncesi fiyat<input type="number" min="0" step="0.01" name="comparePrice" value={form.comparePrice} onChange={update} /></label>
+          <label className="wide">AÃ§Ä±klama<textarea name="description" rows="4" value={form.description} onChange={update} /></label>
           <label>Bedenler<input value={Array.isArray(form.sizes) ? form.sizes.join(", ") : form.sizes} onChange={(event) => setForm({ ...form, sizes: event.target.value })} placeholder="S, M, L" /></label>
           <label>Renkler<input value={Array.isArray(form.colors) ? form.colors.join(", ") : form.colors} onChange={(event) => setForm({ ...form, colors: event.target.value })} placeholder="Siyah, Ekru" /></label>
         </div>
         <div className="image-manager">
-          <div className="image-manager-head"><strong>Ürün görselleri</strong><label className="upload-button"><ImagePlus size={17} /> {uploading ? "Yükleniyor..." : "Görsel yükle"}<input type="file" accept="image/*" onChange={uploadImage} disabled={uploading} /></label></div>
+          <div className="image-manager-head"><strong>ÃœrÃ¼n gÃ¶rselleri</strong><label className="upload-button"><ImagePlus size={17} /> {uploading ? "YÃ¼kleniyor..." : "GÃ¶rsel yÃ¼kle"}<input type="file" accept="image/*" onChange={uploadImage} disabled={uploading} /></label></div>
           <div className="uploaded-images">
             {form.images.map((image, index) => (
               <div key={`${image}-${index}`}><img src={image} alt="" /><button type="button" onClick={() => setForm({ ...form, images: form.images.filter((_, itemIndex) => itemIndex !== index) })}><X size={15} /></button></div>
@@ -445,17 +443,17 @@ function ProductModal({ product, categories, onClose, onSaved }) {
         </div>
         <div className="image-manager variant-image-manager">
           <div className="image-manager-head">
-            <div><strong>Renk ve bedene bağlı görseller</strong><small>Seçilen varyantta müşteriye bu görseller gösterilir.</small></div>
+            <div><strong>Renk ve bedene baÄŸlÄ± gÃ¶rseller</strong><small>SeÃ§ilen varyantta mÃ¼ÅŸteriye bu gÃ¶rseller gÃ¶sterilir.</small></div>
           </div>
           <div className="variant-picker">
-            <label>Renk<select value={variantColor} onChange={(event) => setVariantColor(event.target.value)}><option value="">Tüm renkler</option>{optionList(form.colors).map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label>Beden<select value={variantSize} onChange={(event) => setVariantSize(event.target.value)}><option value="">Tüm bedenler</option>{optionList(form.sizes).map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label className="upload-button variant-upload"><ImagePlus size={17} /> {uploading ? "Yükleniyor..." : "Bu varyanta görsel ekle"}<input type="file" accept="image/*" onChange={uploadVariantImage} disabled={uploading} /></label>
+            <label>Renk<select value={variantColor} onChange={(event) => setVariantColor(event.target.value)}><option value="">TÃ¼m renkler</option>{optionList(form.colors).map((item) => <option key={item}>{item}</option>)}</select></label>
+            <label>Beden<select value={variantSize} onChange={(event) => setVariantSize(event.target.value)}><option value="">TÃ¼m bedenler</option>{optionList(form.sizes).map((item) => <option key={item}>{item}</option>)}</select></label>
+            <label className="upload-button variant-upload"><ImagePlus size={17} /> {uploading ? "YÃ¼kleniyor..." : "Bu varyanta gÃ¶rsel ekle"}<input type="file" accept="image/*" onChange={uploadVariantImage} disabled={uploading} /></label>
           </div>
           <div className="variant-image-groups">
             {form.variantImages.map((variant) => (
               <div className="variant-image-group" key={`${variant.color}-${variant.size}`}>
-                <div><strong>{variant.color || "Tüm renkler"}</strong><span>{variant.size || "Tüm bedenler"}</span></div>
+                <div><strong>{variant.color || "TÃ¼m renkler"}</strong><span>{variant.size || "TÃ¼m bedenler"}</span></div>
                 <div className="uploaded-images">
                   {variant.images.map((image) => (
                     <div key={image}><img src={image} alt="" /><button type="button" onClick={() => removeVariantImage(variant.color, variant.size, image)}><X size={15} /></button></div>
@@ -463,14 +461,14 @@ function ProductModal({ product, categories, onClose, onSaved }) {
                 </div>
               </div>
             ))}
-            {!form.variantImages.length && <p className="variant-empty">Henüz varyanta özel görsel eklenmedi.</p>}
+            {!form.variantImages.length && <p className="variant-empty">HenÃ¼z varyanta Ã¶zel gÃ¶rsel eklenmedi.</p>}
           </div>
         </div>
         <div className="check-row">
-          <label><input type="checkbox" name="active" checked={form.active} onChange={update} /> Satışta</label>
-          <label><input type="checkbox" name="featured" checked={form.featured} onChange={update} /> Anasayfada öne çıkar</label>
+          <label><input type="checkbox" name="active" checked={form.active} onChange={update} /> SatÄ±ÅŸta</label>
+          <label><input type="checkbox" name="featured" checked={form.featured} onChange={update} /> Anasayfada Ã¶ne Ã§Ä±kar</label>
         </div>
-        <div className="modal-actions"><button type="button" className="admin-secondary" onClick={onClose}>Vazgeç</button><button className="admin-primary" disabled={saving}><Save size={17} /> {saving ? "Kaydediliyor..." : "Kaydet"}</button></div>
+        <div className="modal-actions"><button type="button" className="admin-secondary" onClick={onClose}>VazgeÃ§</button><button className="admin-primary" disabled={saving}><Save size={17} /> {saving ? "Kaydediliyor..." : "Kaydet"}</button></div>
       </form>
     </Modal>
   );
@@ -485,19 +483,19 @@ export function AdminCategories() {
   useEffect(() => { load(); }, []);
 
   async function remove(category) {
-    if (!window.confirm(`“${category.name}” kategorisini silmek istediğinizden emin misiniz?`)) return;
+    if (!window.confirm(`â€œ${category.name}â€ kategorisini silmek istediÄŸinizden emin misiniz?`)) return;
     await api(`/api/admin/categories/${category.id}`, { method: "DELETE" });
     await load();
     refreshStore();
   }
 
   return (
-    <AdminPage title="Kategoriler" subtitle="Mağaza menüsünü ve ürün gruplarını yönetin." action={<button className="admin-primary" onClick={() => { setEditing(null); setOpen(true); }}><Plus size={18} /> Yeni kategori</button>}>
+    <AdminPage title="Kategoriler" subtitle="MaÄŸaza menÃ¼sÃ¼nÃ¼ ve Ã¼rÃ¼n gruplarÄ±nÄ± yÃ¶netin." action={<button className="admin-primary" onClick={() => { setEditing(null); setOpen(true); }}><Plus size={18} /> Yeni kategori</button>}>
       <div className="category-admin-grid">
         {categories.map((category) => (
           <article className="category-admin-card" key={category.id}>
             <img src={category.image || "/images/logo.webp"} alt="" />
-            <div><span>{category.active ? "Yayında" : "Gizli"}</span><h2>{category.name}</h2><p>/{category.slug}</p></div>
+            <div><span>{category.active ? "YayÄ±nda" : "Gizli"}</span><h2>{category.name}</h2><p>/{category.slug}</p></div>
             <div className="row-actions"><button onClick={() => { setEditing(category); setOpen(true); }}><Pencil size={17} /></button><button onClick={() => remove(category)}><Trash2 size={17} /></button></div>
           </article>
         ))}
@@ -546,19 +544,19 @@ function CategoryModal({ category, onClose, onSaved }) {
   }
 
   return (
-    <Modal title={category ? "Kategoriyi düzenle" : "Yeni kategori"} onClose={onClose}>
+    <Modal title={category ? "Kategoriyi dÃ¼zenle" : "Yeni kategori"} onClose={onClose}>
       <form className="admin-form" onSubmit={submit}>
         {error && <div className="form-error">{error}</div>}
-        <label>Kategori adı<input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
-        <label>URL kısa adı<input value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} /></label>
-        <label>Açıklama<textarea rows="3" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
-        <label>Sıralama<input type="number" value={form.sortOrder} onChange={(event) => setForm({ ...form, sortOrder: event.target.value })} /></label>
+        <label>Kategori adÄ±<input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
+        <label>URL kÄ±sa adÄ±<input value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} /></label>
+        <label>AÃ§Ä±klama<textarea rows="3" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
+        <label>SÄ±ralama<input type="number" value={form.sortOrder} onChange={(event) => setForm({ ...form, sortOrder: event.target.value })} /></label>
         <div className="image-manager">
-          <div className="image-manager-head"><strong>Kategori görseli</strong><label className="upload-button"><ImagePlus size={17} /> Görsel yükle<input type="file" accept="image/*" onChange={uploadImage} /></label></div>
+          <div className="image-manager-head"><strong>Kategori gÃ¶rseli</strong><label className="upload-button"><ImagePlus size={17} /> GÃ¶rsel yÃ¼kle<input type="file" accept="image/*" onChange={uploadImage} /></label></div>
           {form.image && <div className="category-preview"><img src={form.image} alt="" /></div>}
         </div>
-        <div className="check-row"><label><input type="checkbox" checked={form.active} onChange={(event) => setForm({ ...form, active: event.target.checked })} /> Menüde ve mağazada göster</label></div>
-        <div className="modal-actions"><button type="button" className="admin-secondary" onClick={onClose}>Vazgeç</button><button className="admin-primary"><Save size={17} /> Kaydet</button></div>
+        <div className="check-row"><label><input type="checkbox" checked={form.active} onChange={(event) => setForm({ ...form, active: event.target.checked })} /> MenÃ¼de ve maÄŸazada gÃ¶ster</label></div>
+        <div className="modal-actions"><button type="button" className="admin-secondary" onClick={onClose}>VazgeÃ§</button><button className="admin-primary"><Save size={17} /> Kaydet</button></div>
       </form>
     </Modal>
   );
@@ -578,7 +576,7 @@ export function AdminOrders() {
   }
 
   async function updateStatus(order, status) {
-    if (status === "İptal") {
+    if (status === "Ä°ptal") {
       setCancelOrder(order);
       setCancelReason(order.cancel_reason || "");
       return;
@@ -591,7 +589,7 @@ export function AdminOrders() {
     if (!cancelOrder || !cancelReason.trim()) return;
     setCancelSaving(true);
     try {
-      await updateOrder(cancelOrder.id, { status: "İptal", cancelReason: cancelReason.trim() });
+      await updateOrder(cancelOrder.id, { status: "Ä°ptal", cancelReason: cancelReason.trim() });
       setCancelOrder(null);
       setCancelReason("");
     } finally {
@@ -604,18 +602,18 @@ export function AdminOrders() {
   }
 
   return (
-    <AdminPage title="Siparişler" subtitle={`${orders.length} sipariş listeleniyor.`}>
+    <AdminPage title="SipariÅŸler" subtitle={`${orders.length} sipariÅŸ listeleniyor.`}>
       <section className="admin-card table-card">
         <OrdersTable orders={orders} onStatusChange={updateStatus} onTrackingSave={saveTracking} />
       </section>
       {cancelOrder && (
-        <Modal title="Siparişi iptal et" onClose={() => setCancelOrder(null)}>
+        <Modal title="SipariÅŸi iptal et" onClose={() => setCancelOrder(null)}>
           <form className="admin-form cancel-order-form" onSubmit={saveCancelReason}>
-            <p><strong>{cancelOrder.order_no}</strong> numaralı sipariş için iptal sebebi girin. Bu sebep müşterinin hesabında da görünecek.</p>
-            <label>İptal sebebi<textarea rows="4" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} required /></label>
+            <p><strong>{cancelOrder.order_no}</strong> numaralÄ± sipariÅŸ iÃ§in iptal sebebi girin. Bu sebep mÃ¼ÅŸterinin hesabÄ±nda da gÃ¶rÃ¼necek.</p>
+            <label>Ä°ptal sebebi<textarea rows="4" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} required /></label>
             <div className="modal-actions">
-              <button type="button" className="admin-secondary" onClick={() => setCancelOrder(null)}>Vazgeç</button>
-              <button className="admin-primary" disabled={cancelSaving || !cancelReason.trim()}>{cancelSaving ? "Kaydediliyor..." : "İptal et"}</button>
+              <button type="button" className="admin-secondary" onClick={() => setCancelOrder(null)}>VazgeÃ§</button>
+              <button className="admin-primary" disabled={cancelSaving || !cancelReason.trim()}>{cancelSaving ? "Kaydediliyor..." : "Ä°ptal et"}</button>
             </div>
           </form>
         </Modal>
@@ -631,19 +629,19 @@ function OrdersTable({ orders, compact = false, onStatusChange, onTrackingSave }
   return (
     <div className="admin-table-wrap">
       <table className="admin-table">
-        <thead><tr><th>Sipariş</th><th>Müşteri</th>{!compact && <th>Ürünler</th>}<th>Toplam</th><th>Durum</th><th>Tarih</th>{!compact && <th>Detay</th>}</tr></thead>
+        <thead><tr><th>SipariÅŸ</th><th>MÃ¼ÅŸteri</th>{!compact && <th>ÃœrÃ¼nler</th>}<th>Toplam</th><th>Durum</th><th>Tarih</th>{!compact && <th>Detay</th>}</tr></thead>
         <tbody>
           {orders.length ? orders.map((order) => (
             <Fragment key={order.id}>
               <tr className={expandedId === order.id ? "order-row expanded" : "order-row"}>
                 <td><strong>{order.order_no}</strong></td>
                 <td><span className="table-customer"><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email}</small></span></td>
-                {!compact && <td>{order.items?.reduce((sum, item) => sum + item.quantity, 0)} ürün</td>}
+                {!compact && <td>{order.items?.reduce((sum, item) => sum + item.quantity, 0)} Ã¼rÃ¼n</td>}
                 <td><strong>{formatPrice(order.total)}</strong></td>
                 <td>
                   {onStatusChange ? (
-                    <select className={`status-select status-${order.status.toLocaleLowerCase("tr-TR").replaceAll("ı", "i")}`} value={order.status} onChange={(event) => onStatusChange(order, event.target.value)}>
-                      {["Ödeme Bekleniyor", "Yeni", "Hazırlanıyor", "Kargoda", "Tamamlandı", "İptal"].map((status) => <option key={status}>{status}</option>)}
+                    <select className={`status-select status-${order.status.toLocaleLowerCase("tr-TR").replaceAll("Ä±", "i")}`} value={order.status} onChange={(event) => onStatusChange(order, event.target.value)}>
+                      {["Ã–deme Bekleniyor", "Yeni", "HazÄ±rlanÄ±yor", "Kargoda", "TamamlandÄ±", "Ä°ptal"].map((status) => <option key={status}>{status}</option>)}
                     </select>
                   ) : <StatusBadge value={order.status} />}
                 </td>
@@ -653,7 +651,7 @@ function OrdersTable({ orders, compact = false, onStatusChange, onTrackingSave }
                     <button
                       className={expandedId === order.id ? "order-detail-toggle active" : "order-detail-toggle"}
                       onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                      aria-label="Sipariş detayını göster"
+                      aria-label="SipariÅŸ detayÄ±nÄ± gÃ¶ster"
                     >
                       <ChevronDown size={17} />
                     </button>
@@ -666,7 +664,7 @@ function OrdersTable({ orders, compact = false, onStatusChange, onTrackingSave }
                 </tr>
               )}
             </Fragment>
-          )) : <tr><td colSpan={columnCount} className="empty-table">Henüz sipariş yok.</td></tr>}
+          )) : <tr><td colSpan={columnCount} className="empty-table">HenÃ¼z sipariÅŸ yok.</td></tr>}
         </tbody>
       </table>
     </div>
@@ -686,7 +684,7 @@ function AdminOrderDetail({ order, onTrackingSave }) {
   ].some(Boolean);
   const fullAddress = hasStructuredAddress
     ? [
-        ["İl / İlçe", [order.city, order.district].filter(Boolean).join(" / ")],
+        ["Ä°l / Ä°lÃ§e", [order.city, order.district].filter(Boolean).join(" / ")],
         ["Mahalle", order.neighborhood],
         ["Cadde / Sokak", order.street],
         ["Bina no", order.building_no],
@@ -696,7 +694,7 @@ function AdminOrderDetail({ order, onTrackingSave }) {
       ].filter(([, value]) => value)
     : [
         ["Adres", order.address],
-        ["İl / İlçe", [order.city, order.district].filter(Boolean).join(" / ")],
+        ["Ä°l / Ä°lÃ§e", [order.city, order.district].filter(Boolean).join(" / ")],
         ["Posta kodu", order.postal_code]
       ].filter(([, value]) => value);
 
@@ -721,7 +719,7 @@ function AdminOrderDetail({ order, onTrackingSave }) {
     <div className="admin-order-detail">
       <div className="admin-order-information">
         <section>
-          <h3>Müşteri bilgileri</h3>
+          <h3>MÃ¼ÅŸteri bilgileri</h3>
           <p><strong>{order.customer_name}</strong></p>
           <p><Phone size={14} /> {order.phone}</p>
           <p><Mail size={14} /> {order.email}</p>
@@ -735,15 +733,15 @@ function AdminOrderDetail({ order, onTrackingSave }) {
           </div>
         </section>
         <section>
-          <h3>Sipariş bilgileri</h3>
-          <p><span>Ödeme</span><strong>{order.payment_method}</strong></p>
+          <h3>SipariÅŸ bilgileri</h3>
+          <p><span>Ã–deme</span><strong>{order.payment_method}</strong></p>
           <p><span>Ara toplam</span><strong>{formatPrice(order.subtotal)}</strong></p>
-          <p><span>Kargo</span><strong>{order.shipping ? formatPrice(order.shipping) : "Ücretsiz"}</strong></p>
+          <p><span>Kargo</span><strong>{order.shipping ? formatPrice(order.shipping) : "Ãœcretsiz"}</strong></p>
           <p><span>Toplam</span><strong>{formatPrice(order.total)}</strong></p>
         </section>
         <section>
-          <h3>Sipariş notu</h3>
-          <p><StickyNote size={14} /> {order.notes || "Sipariş notu bulunmuyor."}</p>
+          <h3>SipariÅŸ notu</h3>
+          <p><StickyNote size={14} /> {order.notes || "SipariÅŸ notu bulunmuyor."}</p>
         </section>
         <section>
           <h3>Kargo takibi</h3>
@@ -751,25 +749,25 @@ function AdminOrderDetail({ order, onTrackingSave }) {
             <input value={trackingCode} onChange={(event) => { setTrackingCode(event.target.value); setTrackingSaved(false); }} placeholder="Kargo takip kodu" />
             <button className="admin-primary" disabled={trackingSaving}>{trackingSaving ? "Kaydediliyor..." : "Kaydet"}</button>
           </form>
-          <p><Package size={14} /> {trackingCode ? "Takip kodu müşteride görünecek." : "Henüz takip kodu girilmedi."}</p>
+          <p><Package size={14} /> {trackingCode ? "Takip kodu mÃ¼ÅŸteride gÃ¶rÃ¼necek." : "HenÃ¼z takip kodu girilmedi."}</p>
           {trackingSaved && <p className="tracking-saved"><Save size={14} /> Takip kodu kaydedildi.</p>}
         </section>
         {order.cancel_reason && (
           <section>
-            <h3>İptal sebebi</h3>
+            <h3>Ä°ptal sebebi</h3>
             <p><CircleAlert size={14} /> {order.cancel_reason}</p>
           </section>
         )}
       </div>
       <div className="admin-order-products">
-        <h3>Sipariş edilen ürünler</h3>
+        <h3>SipariÅŸ edilen Ã¼rÃ¼nler</h3>
         {order.items?.map((item, index) => (
           <article key={`${item.productId}-${index}`}>
             <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
             <div>
               <strong>{item.name}</strong>
-              <span>{[item.color && `Renk: ${item.color}`, item.size && `Beden: ${item.size}`].filter(Boolean).join(" · ") || "Standart ürün"}</span>
-              <small>{item.quantity} adet × {formatPrice(item.price)}</small>
+              <span>{[item.color && `Renk: ${item.color}`, item.size && `Beden: ${item.size}`].filter(Boolean).join(" Â· ") || "Standart Ã¼rÃ¼n"}</span>
+              <small>{item.quantity} adet Ã— {formatPrice(item.price)}</small>
             </div>
             <b>{formatPrice(item.lineTotal || item.price * item.quantity)}</b>
           </article>
@@ -852,7 +850,7 @@ export function AdminSettings() {
   async function changePassword() {
     setError("");
     if (passwords.newPassword !== passwords.confirmPassword) {
-      setError("Yeni şifreler eşleşmiyor.");
+      setError("Yeni ÅŸifreler eÅŸleÅŸmiyor.");
       return;
     }
     try {
@@ -872,16 +870,16 @@ export function AdminSettings() {
   }
 
   return (
-    <AdminPage title="Site Ayarları" subtitle="Vitrin metinleri, görseller ve operasyon bilgileri.">
+    <AdminPage title="Site AyarlarÄ±" subtitle="Vitrin metinleri, gÃ¶rseller ve operasyon bilgileri.">
       <form className="settings-form" onSubmit={submit}>
         {error && <div className="form-error">{error}</div>}
-        <SettingsSection title="Marka ve duyuru" description="Üst bölümde görünen temel marka bilgileri.">
+        <SettingsSection title="Marka ve duyuru" description="Ãœst bÃ¶lÃ¼mde gÃ¶rÃ¼nen temel marka bilgileri.">
           <div className="form-grid">
-            <label>Mağaza adı<input name="storeName" value={form.storeName || ""} onChange={update} /></label>
-            <label className="wide">Alt bilgi kısa metni<input name="footerNote" value={form.footerNote || ""} onChange={update} /></label>
+            <label>MaÄŸaza adÄ±<input name="storeName" value={form.storeName || ""} onChange={update} /></label>
+            <label className="wide">Alt bilgi kÄ±sa metni<input name="footerNote" value={form.footerNote || ""} onChange={update} /></label>
           </div>
           <div className="announcement-editor">
-            <div className="image-manager-head"><div><strong>Duyuru mesajları</strong><small>Mesajlar 5 saniyede bir animasyonla değişir.</small></div><button type="button" className="admin-secondary" onClick={addAnnouncement}><Plus size={16} /> Mesaj ekle</button></div>
+            <div className="image-manager-head"><div><strong>Duyuru mesajlarÄ±</strong><small>Mesajlar 5 saniyede bir animasyonla deÄŸiÅŸir.</small></div><button type="button" className="admin-secondary" onClick={addAnnouncement}><Plus size={16} /> Mesaj ekle</button></div>
             {(form.announcements || [form.announcement || ""]).map((message, index) => (
               <div className="announcement-row" key={index}>
                 <span>{index + 1}</span>
@@ -890,78 +888,78 @@ export function AdminSettings() {
               </div>
             ))}
           </div>
-          <div className="setting-upload"><img src={form.logo} alt="" /><label className="upload-button"><ImagePlus size={17} /> Logoyu değiştir<input type="file" accept="image/*" onChange={(event) => upload(event, "logo")} /></label></div>
+          <div className="setting-upload"><img src={form.logo} alt="" /><label className="upload-button"><ImagePlus size={17} /> Logoyu deÄŸiÅŸtir<input type="file" accept="image/*" onChange={(event) => upload(event, "logo")} /></label></div>
         </SettingsSection>
 
-        <SettingsSection title="Ana sayfa vitrini" description="Büyük açılış alanının metinleri ve slayt görselleri.">
+        <SettingsSection title="Ana sayfa vitrini" description="BÃ¼yÃ¼k aÃ§Ä±lÄ±ÅŸ alanÄ±nÄ±n metinleri ve slayt gÃ¶rselleri.">
           <div className="form-grid">
-            <label className="wide">Başlık<input name="heroTitle" value={form.heroTitle || ""} onChange={update} /></label>
+            <label className="wide">BaÅŸlÄ±k<input name="heroTitle" value={form.heroTitle || ""} onChange={update} /></label>
             <label className="wide">Alt metin<textarea name="heroSubtitle" value={form.heroSubtitle || ""} onChange={update} rows="2" /></label>
             <label>Buton metni<input name="heroButton" value={form.heroButton || ""} onChange={update} /></label>
           </div>
           <div className="image-manager">
-            <div className="image-manager-head"><strong>Slayt görselleri</strong><label className="upload-button"><ImagePlus size={17} /> Yeni slayt<input type="file" accept="image/*" onChange={(event) => upload(event, "heroImages")} /></label></div>
+            <div className="image-manager-head"><strong>Slayt gÃ¶rselleri</strong><label className="upload-button"><ImagePlus size={17} /> Yeni slayt<input type="file" accept="image/*" onChange={(event) => upload(event, "heroImages")} /></label></div>
             <div className="hero-admin-images">
               {(form.heroImages || []).map((image, index) => <div key={`${image}-${index}`}><img src={image} alt="" /><button type="button" onClick={() => setForm({ ...form, heroImages: form.heroImages.filter((_, itemIndex) => itemIndex !== index) })}><X size={15} /></button></div>)}
             </div>
           </div>
         </SettingsSection>
 
-        <SettingsSection title="Giriş ve kayıt ekranı" description="Müşteri giriş/kayıt sayfasındaki fotoğraf ve metinleri düzenleyin.">
+        <SettingsSection title="GiriÅŸ ve kayÄ±t ekranÄ±" description="MÃ¼ÅŸteri giriÅŸ/kayÄ±t sayfasÄ±ndaki fotoÄŸraf ve metinleri dÃ¼zenleyin.">
           <div className="form-grid">
-            <label>Küçük başlık<input name="authEyebrow" value={form.authEyebrow || ""} onChange={update} /></label>
-            <label>Giriş başlığı<input name="authLoginTitle" value={form.authLoginTitle || ""} onChange={update} /></label>
-            <label className="wide">Giriş açıklaması<textarea name="authLoginText" value={form.authLoginText || ""} onChange={update} rows="2" /></label>
-            <label>Kayıt başlığı<input name="authRegisterTitle" value={form.authRegisterTitle || ""} onChange={update} /></label>
-            <label className="wide">Kayıt açıklaması<textarea name="authRegisterText" value={form.authRegisterText || ""} onChange={update} rows="2" /></label>
+            <label>KÃ¼Ã§Ã¼k baÅŸlÄ±k<input name="authEyebrow" value={form.authEyebrow || ""} onChange={update} /></label>
+            <label>GiriÅŸ baÅŸlÄ±ÄŸÄ±<input name="authLoginTitle" value={form.authLoginTitle || ""} onChange={update} /></label>
+            <label className="wide">GiriÅŸ aÃ§Ä±klamasÄ±<textarea name="authLoginText" value={form.authLoginText || ""} onChange={update} rows="2" /></label>
+            <label>KayÄ±t baÅŸlÄ±ÄŸÄ±<input name="authRegisterTitle" value={form.authRegisterTitle || ""} onChange={update} /></label>
+            <label className="wide">KayÄ±t aÃ§Ä±klamasÄ±<textarea name="authRegisterText" value={form.authRegisterText || ""} onChange={update} rows="2" /></label>
           </div>
           <div className="setting-upload wide-upload">
             <img src={form.authImage || "/images/hero-vest.webp"} alt="" />
-            <label className="upload-button"><ImagePlus size={17} /> Giriş fotoğrafını değiştir<input type="file" accept="image/*" onChange={(event) => upload(event, "authImage")} /></label>
+            <label className="upload-button"><ImagePlus size={17} /> GiriÅŸ fotoÄŸrafÄ±nÄ± deÄŸiÅŸtir<input type="file" accept="image/*" onChange={(event) => upload(event, "authImage")} /></label>
           </div>
         </SettingsSection>
 
-        <SettingsSection title="WhatsApp ve iletişim" description="WhatsApp butonu ve mağaza bilgilerinde gösterilir.">
+        <SettingsSection title="WhatsApp ve iletiÅŸim" description="WhatsApp butonu ve maÄŸaza bilgilerinde gÃ¶sterilir.">
           <div className="form-grid">
             <label>Telefon<input name="phone" value={form.phone || ""} onChange={update} /></label>
             <label>E-posta<input name="email" value={form.email || ""} onChange={update} /></label>
-            <label>WhatsApp numarası<input name="whatsapp" value={form.whatsapp || ""} onChange={update} /></label>
+            <label>WhatsApp numarasÄ±<input name="whatsapp" value={form.whatsapp || ""} onChange={update} /></label>
             <label>Instagram adresi<input name="instagram" value={form.instagram || ""} onChange={update} /></label>
             <label className="wide">Adres<input name="address" value={form.address || ""} onChange={update} /></label>
           </div>
         </SettingsSection>
 
-        <SettingsSection title="Güven şeridi" description="Ana sayfadaki Güvenli alışveriş, Hızlı gönderim ve Kolay iade kutularını düzenleyin.">
+        <SettingsSection title="GÃ¼ven ÅŸeridi" description="Ana sayfadaki GÃ¼venli alÄ±ÅŸveriÅŸ, HÄ±zlÄ± gÃ¶nderim ve Kolay iade kutularÄ±nÄ± dÃ¼zenleyin.">
           <div className="form-grid">
-            <label>1. başlık<input name="trustTitle1" value={form.trustTitle1 || ""} onChange={update} /></label>
+            <label>1. baÅŸlÄ±k<input name="trustTitle1" value={form.trustTitle1 || ""} onChange={update} /></label>
             <label>1. alt metin<input name="trustText1" value={form.trustText1 || ""} onChange={update} /></label>
-            <label>2. başlık<input name="trustTitle2" value={form.trustTitle2 || ""} onChange={update} /></label>
+            <label>2. baÅŸlÄ±k<input name="trustTitle2" value={form.trustTitle2 || ""} onChange={update} /></label>
             <label>2. alt metin<input name="trustText2" value={form.trustText2 || ""} onChange={update} /></label>
-            <label>3. başlık<input name="trustTitle3" value={form.trustTitle3 || ""} onChange={update} /></label>
+            <label>3. baÅŸlÄ±k<input name="trustTitle3" value={form.trustTitle3 || ""} onChange={update} /></label>
             <label>3. alt metin<input name="trustText3" value={form.trustText3 || ""} onChange={update} /></label>
           </div>
         </SettingsSection>
 
-        <SettingsSection title="Kargo ve iade" description="Sepette otomatik hesaplamada kullanılır.">
+        <SettingsSection title="Kargo ve iade" description="Sepette otomatik hesaplamada kullanÄ±lÄ±r.">
           <div className="form-grid">
-            <label>Kargo ücreti<input type="number" step="0.01" name="shippingFee" value={form.shippingFee ?? ""} onChange={update} /></label>
-            <label>Ücretsiz kargo limiti<input type="number" step="0.01" name="freeShippingThreshold" value={form.freeShippingThreshold ?? ""} onChange={update} /></label>
-            <label>İade süresi (iş günü)<input type="number" name="returnDays" value={form.returnDays ?? ""} onChange={update} /></label>
+            <label>Kargo Ã¼creti<input type="number" step="0.01" name="shippingFee" value={form.shippingFee ?? ""} onChange={update} /></label>
+            <label>Ãœcretsiz kargo limiti<input type="number" step="0.01" name="freeShippingThreshold" value={form.freeShippingThreshold ?? ""} onChange={update} /></label>
+            <label>Ä°ade sÃ¼resi (iÅŸ gÃ¼nÃ¼)<input type="number" name="returnDays" value={form.returnDays ?? ""} onChange={update} /></label>
           </div>
         </SettingsSection>
 
-        <SettingsSection title="Yönetici şifresi" description="Panel hesabınızın giriş şifresini güncelleyin.">
+        <SettingsSection title="YÃ¶netici ÅŸifresi" description="Panel hesabÄ±nÄ±zÄ±n giriÅŸ ÅŸifresini gÃ¼ncelleyin.">
           <div className="form-grid">
-            <label className="wide">Mevcut şifre<input type="password" value={passwords.currentPassword} onChange={(event) => setPasswords({ ...passwords, currentPassword: event.target.value })} /></label>
-            <label>Yeni şifre<input type="password" value={passwords.newPassword} onChange={(event) => setPasswords({ ...passwords, newPassword: event.target.value })} /></label>
-            <label>Yeni şifre tekrar<input type="password" value={passwords.confirmPassword} onChange={(event) => setPasswords({ ...passwords, confirmPassword: event.target.value })} /></label>
+            <label className="wide">Mevcut ÅŸifre<input type="password" value={passwords.currentPassword} onChange={(event) => setPasswords({ ...passwords, currentPassword: event.target.value })} /></label>
+            <label>Yeni ÅŸifre<input type="password" value={passwords.newPassword} onChange={(event) => setPasswords({ ...passwords, newPassword: event.target.value })} /></label>
+            <label>Yeni ÅŸifre tekrar<input type="password" value={passwords.confirmPassword} onChange={(event) => setPasswords({ ...passwords, confirmPassword: event.target.value })} /></label>
           </div>
           <button type="button" className="admin-secondary password-button" onClick={changePassword}>
-            {passwordSaved ? "Şifre güncellendi" : "Şifreyi güncelle"}
+            {passwordSaved ? "Åifre gÃ¼ncellendi" : "Åifreyi gÃ¼ncelle"}
           </button>
         </SettingsSection>
 
-        <div className="settings-save"><button className="admin-primary"><Save size={18} /> {saved ? "Kaydedildi" : "Tüm değişiklikleri kaydet"}</button></div>
+        <div className="settings-save"><button className="admin-primary"><Save size={18} /> {saved ? "Kaydedildi" : "TÃ¼m deÄŸiÅŸiklikleri kaydet"}</button></div>
       </form>
     </AdminPage>
   );
@@ -996,6 +994,6 @@ function Modal({ title, onClose, children }) {
 }
 
 function StatusBadge({ value }) {
-  const className = value.toLocaleLowerCase("tr-TR").replaceAll("ı", "i").replaceAll(" ", "-");
+  const className = value.toLocaleLowerCase("tr-TR").replaceAll("Ä±", "i").replaceAll(" ", "-");
   return <span className={`status-badge status-${className}`}>{value}</span>;
 }
