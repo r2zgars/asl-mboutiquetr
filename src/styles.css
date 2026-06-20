@@ -4301,7 +4301,14 @@ img {
   }
 
   .product-page .purchase-row {
-    grid-template-columns: 95px 1fr;
+    grid-template-columns: 1fr;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .product-page .add-button {
+    width: 100%;
+    max-width: none;
   }
 
   .cart-page > h1,
