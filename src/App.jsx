@@ -15,7 +15,6 @@ import {
   AdminDashboard,
   AdminLayout,
   AdminLogin,
-  AdminOrders,
   AdminProducts,
   AdminSettings
 } from "./admin";
@@ -41,7 +40,6 @@ export default function App() {
         <Route index element={<AdminDashboard />} />
         <Route path="urunler" element={<AdminProducts />} />
         <Route path="kategoriler" element={<AdminCategories />} />
-        <Route path="siparisler" element={<AdminOrders />} />
         <Route path="ayarlar" element={<AdminSettings />} />
       </Route>
 

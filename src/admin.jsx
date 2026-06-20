@@ -1,31 +1,23 @@
-﻿import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  BarChart3,
   Boxes,
-  ChevronDown,
-  ChevronRight,
   CircleAlert,
   ExternalLink,
   ImagePlus,
   LayoutDashboard,
-  Mail,
-  MapPin,
   LogOut,
   Menu,
   Package,
   Pencil,
-  Phone,
   Plus,
   Save,
   Settings,
-  ShoppingCart,
-  StickyNote,
   Tags,
   Trash2,
   X
 } from "lucide-react";
-import { Link, NavLink, Outlet, useNavigate, useOutletContext } from "react-router-dom";
-import { api, formatDate, formatPrice } from "./api";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { api, formatPrice } from "./api";
 import { useStore } from "./store";
 
 export function AdminLogin() {
@@ -94,7 +86,6 @@ export function AdminLayout() {
     ["/admin", "Genel Bakış", LayoutDashboard, true],
     ["/admin/urunler", "Ürünler", Package],
     ["/admin/kategoriler", "Kategoriler", Tags],
-    ["/admin/siparisler", "Siparişler", ShoppingCart],
     ["/admin/ayarlar", "Site Ayarları", Settings]
   ];
 
@@ -135,19 +126,11 @@ export function AdminDashboard() {
 
   const cards = [
     ["Toplam ürün", stats.productCount, Boxes, "Ürün kataloğunuz"],
-    ["Toplam sipariş", stats.orderCount, ShoppingCart, "Tüm zamanlar"],
-    ["Tüm ciro", formatPrice(stats.revenuePeriods?.all ?? stats.revenue), BarChart3, "İptaller hariç"],
     ["Kritik stok", stats.lowStock, CircleAlert, "5 adet ve altı"]
-  ];
-  const revenueCards = [
-    ["1 hafta", stats.revenuePeriods?.week ?? 0],
-    ["1 ay", stats.revenuePeriods?.month ?? 0],
-    ["1 yıl", stats.revenuePeriods?.year ?? 0],
-    ["Tüm zamanlar", stats.revenuePeriods?.all ?? stats.revenue]
   ];
 
   return (
-    <AdminPage title="Genel Bakış" subtitle="Mağazanızın bugünkü durumuna hızlıca göz atın.">
+    <AdminPage title="Genel Bakış" subtitle="Mağazanızın ürün kataloğunu hızlıca kontrol edin.">
       <div className="stat-grid">
         {cards.map(([label, value, Icon, note]) => (
           <article className="stat-card" key={label}>
@@ -157,27 +140,6 @@ export function AdminDashboard() {
           </article>
         ))}
       </div>
-      <section className="admin-card revenue-card">
-        <div className="admin-card-head">
-          <div><h2>Ciro takibi</h2><p>İptal siparişler hariç dönemsel gelir</p></div>
-          <BarChart3 size={20} />
-        </div>
-        <div className="revenue-grid">
-          {revenueCards.map(([label, value]) => (
-            <div key={label}>
-              <span>{label}</span>
-              <strong>{formatPrice(value)}</strong>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="admin-card">
-        <div className="admin-card-head">
-          <div><h2>Son siparişler</h2><p>En güncel müşteri siparişleri</p></div>
-          <Link to="/admin/siparisler">Tümünü gör <ChevronRight size={17} /></Link>
-        </div>
-        <OrdersTable orders={stats.recentOrders} compact />
-      </section>
     </AdminPage>
   );
 }
@@ -562,221 +524,6 @@ function CategoryModal({ category, onClose, onSaved }) {
   );
 }
 
-export function AdminOrders() {
-  const [orders, setOrders] = useState([]);
-  const [cancelOrder, setCancelOrder] = useState(null);
-  const [cancelReason, setCancelReason] = useState("");
-  const [cancelSaving, setCancelSaving] = useState(false);
-  const load = () => api("/api/admin/orders").then(setOrders);
-  useEffect(() => { load(); }, []);
-
-  async function updateOrder(id, body) {
-    await api(`/api/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(body) });
-    await load();
-  }
-
-  async function updateStatus(order, status) {
-    if (status === "İptal") {
-      setCancelOrder(order);
-      setCancelReason(order.cancel_reason || "");
-      return;
-    }
-    await updateOrder(order.id, { status });
-  }
-
-  async function saveCancelReason(event) {
-    event.preventDefault();
-    if (!cancelOrder || !cancelReason.trim()) return;
-    setCancelSaving(true);
-    try {
-      await updateOrder(cancelOrder.id, { status: "İptal", cancelReason: cancelReason.trim() });
-      setCancelOrder(null);
-      setCancelReason("");
-    } finally {
-      setCancelSaving(false);
-    }
-  }
-
-  async function saveTracking(order, trackingCode) {
-    await updateOrder(order.id, { trackingCode });
-  }
-
-  return (
-    <AdminPage title="Siparişler" subtitle={`${orders.length} sipariş listeleniyor.`}>
-      <section className="admin-card table-card">
-        <OrdersTable orders={orders} onStatusChange={updateStatus} onTrackingSave={saveTracking} />
-      </section>
-      {cancelOrder && (
-        <Modal title="Siparişi iptal et" onClose={() => setCancelOrder(null)}>
-          <form className="admin-form cancel-order-form" onSubmit={saveCancelReason}>
-            <p><strong>{cancelOrder.order_no}</strong> numaralı sipariş için iptal sebebi girin. Bu sebep müşterinin hesabında da görünecek.</p>
-            <label>İptal sebebi<textarea rows="4" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} required /></label>
-            <div className="modal-actions">
-              <button type="button" className="admin-secondary" onClick={() => setCancelOrder(null)}>Vazgeç</button>
-              <button className="admin-primary" disabled={cancelSaving || !cancelReason.trim()}>{cancelSaving ? "Kaydediliyor..." : "İptal et"}</button>
-            </div>
-          </form>
-        </Modal>
-      )}
-    </AdminPage>
-  );
-}
-
-function OrdersTable({ orders, compact = false, onStatusChange, onTrackingSave }) {
-  const [expandedId, setExpandedId] = useState(null);
-  const columnCount = compact ? 5 : 7;
-
-  return (
-    <div className="admin-table-wrap">
-      <table className="admin-table">
-        <thead><tr><th>Sipariş</th><th>Müşteri</th>{!compact && <th>Ürünler</th>}<th>Toplam</th><th>Durum</th><th>Tarih</th>{!compact && <th>Detay</th>}</tr></thead>
-        <tbody>
-          {orders.length ? orders.map((order) => (
-            <Fragment key={order.id}>
-              <tr className={expandedId === order.id ? "order-row expanded" : "order-row"}>
-                <td><strong>{order.order_no}</strong></td>
-                <td><span className="table-customer"><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email}</small></span></td>
-                {!compact && <td>{order.items?.reduce((sum, item) => sum + item.quantity, 0)} ürün</td>}
-                <td><strong>{formatPrice(order.total)}</strong></td>
-                <td>
-                  {onStatusChange ? (
-                    <select className={`status-select status-${order.status.toLocaleLowerCase("tr-TR").replaceAll("ı", "i")}`} value={order.status} onChange={(event) => onStatusChange(order, event.target.value)}>
-                      {["Ödeme Bekleniyor", "Yeni", "Hazırlanıyor", "Kargoda", "Tamamlandı", "İptal"].map((status) => <option key={status}>{status}</option>)}
-                    </select>
-                  ) : <StatusBadge value={order.status} />}
-                </td>
-                <td>{formatDate(order.created_at)}</td>
-                {!compact && (
-                  <td>
-                    <button
-                      className={expandedId === order.id ? "order-detail-toggle active" : "order-detail-toggle"}
-                      onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                      aria-label="Sipariş detayını göster"
-                    >
-                      <ChevronDown size={17} />
-                    </button>
-                  </td>
-                )}
-              </tr>
-              {!compact && expandedId === order.id && (
-                <tr className="order-detail-row">
-                  <td colSpan={columnCount}><AdminOrderDetail order={order} onTrackingSave={onTrackingSave} /></td>
-                </tr>
-              )}
-            </Fragment>
-          )) : <tr><td colSpan={columnCount} className="empty-table">Henüz sipariş yok.</td></tr>}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function AdminOrderDetail({ order, onTrackingSave }) {
-  const [trackingCode, setTrackingCode] = useState(order.tracking_code || "");
-  const [trackingSaving, setTrackingSaving] = useState(false);
-  const [trackingSaved, setTrackingSaved] = useState(false);
-  const hasStructuredAddress = [
-    order.neighborhood,
-    order.street,
-    order.building_no,
-    order.floor,
-    order.apartment_no
-  ].some(Boolean);
-  const fullAddress = hasStructuredAddress
-    ? [
-        ["İl / İlçe", [order.city, order.district].filter(Boolean).join(" / ")],
-        ["Mahalle", order.neighborhood],
-        ["Cadde / Sokak", order.street],
-        ["Bina no", order.building_no],
-        ["Kat", order.floor],
-        ["Daire no", order.apartment_no],
-        ["Posta kodu", order.postal_code]
-      ].filter(([, value]) => value)
-    : [
-        ["Adres", order.address],
-        ["İl / İlçe", [order.city, order.district].filter(Boolean).join(" / ")],
-        ["Posta kodu", order.postal_code]
-      ].filter(([, value]) => value);
-
-  useEffect(() => {
-    setTrackingCode(order.tracking_code || "");
-    setTrackingSaved(false);
-  }, [order.id, order.tracking_code]);
-
-  async function saveTracking(event) {
-    event.preventDefault();
-    if (!onTrackingSave) return;
-    setTrackingSaving(true);
-    try {
-      await onTrackingSave(order, trackingCode.trim());
-      setTrackingSaved(true);
-    } finally {
-      setTrackingSaving(false);
-    }
-  }
-
-  return (
-    <div className="admin-order-detail">
-      <div className="admin-order-information">
-        <section>
-          <h3>Müşteri bilgileri</h3>
-          <p><strong>{order.customer_name}</strong></p>
-          <p><Phone size={14} /> {order.phone}</p>
-          <p><Mail size={14} /> {order.email}</p>
-        </section>
-        <section className="address-section">
-          <h3>Teslimat adresi</h3>
-          <div className="admin-address-grid">
-            {fullAddress.map(([label, value]) => (
-              <div key={label}><span>{label}</span><strong>{value}</strong></div>
-            ))}
-          </div>
-        </section>
-        <section>
-          <h3>Sipariş bilgileri</h3>
-          <p><span>Ödeme</span><strong>{order.payment_method}</strong></p>
-          <p><span>Ara toplam</span><strong>{formatPrice(order.subtotal)}</strong></p>
-          <p><span>Kargo</span><strong>{order.shipping ? formatPrice(order.shipping) : "Ücretsiz"}</strong></p>
-          <p><span>Toplam</span><strong>{formatPrice(order.total)}</strong></p>
-        </section>
-        <section>
-          <h3>Sipariş notu</h3>
-          <p><StickyNote size={14} /> {order.notes || "Sipariş notu bulunmuyor."}</p>
-        </section>
-        <section>
-          <h3>Kargo takibi</h3>
-          <form className="tracking-form" onSubmit={saveTracking}>
-            <input value={trackingCode} onChange={(event) => { setTrackingCode(event.target.value); setTrackingSaved(false); }} placeholder="Kargo takip kodu" />
-            <button className="admin-primary" disabled={trackingSaving}>{trackingSaving ? "Kaydediliyor..." : "Kaydet"}</button>
-          </form>
-          <p><Package size={14} /> {trackingCode ? "Takip kodu müşteride görünecek." : "Henüz takip kodu girilmedi."}</p>
-          {trackingSaved && <p className="tracking-saved"><Save size={14} /> Takip kodu kaydedildi.</p>}
-        </section>
-        {order.cancel_reason && (
-          <section>
-            <h3>İptal sebebi</h3>
-            <p><CircleAlert size={14} /> {order.cancel_reason}</p>
-          </section>
-        )}
-      </div>
-      <div className="admin-order-products">
-        <h3>Sipariş edilen ürünler</h3>
-        {order.items?.map((item, index) => (
-          <article key={`${item.productId}-${index}`}>
-            <img src={item.image || "/images/hero-scarf.webp"} alt={item.name} />
-            <div>
-              <strong>{item.name}</strong>
-              <span>{[item.color && `Renk: ${item.color}`, item.size && `Beden: ${item.size}`].filter(Boolean).join(" · ") || "Standart ürün"}</span>
-              <small>{item.quantity} adet × {formatPrice(item.price)}</small>
-            </div>
-            <b>{formatPrice(item.lineTotal || item.price * item.quantity)}</b>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function AdminSettings() {
   const { refreshStore } = useStore();
   const [form, setForm] = useState(null);
@@ -832,12 +579,7 @@ export function AdminSettings() {
     try {
       await api("/api/admin/settings", {
         method: "PUT",
-        body: JSON.stringify({
-          ...form,
-          shippingFee: Number(form.shippingFee),
-          freeShippingThreshold: Number(form.freeShippingThreshold),
-          returnDays: Number(form.returnDays)
-        })
+        body: JSON.stringify(form)
       });
       await refreshStore();
       setSaved(true);
@@ -937,14 +679,6 @@ export function AdminSettings() {
             <label>2. alt metin<input name="trustText2" value={form.trustText2 || ""} onChange={update} /></label>
             <label>3. başlık<input name="trustTitle3" value={form.trustTitle3 || ""} onChange={update} /></label>
             <label>3. alt metin<input name="trustText3" value={form.trustText3 || ""} onChange={update} /></label>
-          </div>
-        </SettingsSection>
-
-        <SettingsSection title="Kargo ve iade" description="Sepette otomatik hesaplamada kullanılır.">
-          <div className="form-grid">
-            <label>Kargo ücreti<input type="number" step="0.01" name="shippingFee" value={form.shippingFee ?? ""} onChange={update} /></label>
-            <label>Ücretsiz kargo limiti<input type="number" step="0.01" name="freeShippingThreshold" value={form.freeShippingThreshold ?? ""} onChange={update} /></label>
-            <label>İade süresi (iş günü)<input type="number" name="returnDays" value={form.returnDays ?? ""} onChange={update} /></label>
           </div>
         </SettingsSection>
 
