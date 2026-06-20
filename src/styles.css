@@ -3846,7 +3846,12 @@ img {
   }
 
   .product-page .add-button {
-    width: min(100%, 260px);
+    width: min(100%, 340px);
+    min-height: 54px;
+    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .product-description p {
