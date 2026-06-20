@@ -1260,7 +1260,7 @@ img {
 
 .purchase-row {
   display: grid;
-  grid-template-columns: 112px 1fr;
+  grid-template-columns: 1fr;
   gap: 9px;
   padding-top: 22px;
   border-top: 1px solid var(--line);
@@ -1291,6 +1291,8 @@ img {
 
 .add-button {
   min-width: 0;
+  width: 100%;
+  justify-content: center;
 }
 
 .stock-note {
@@ -3759,35 +3761,71 @@ img {
   }
 
   .product-page {
-    padding: 0 0 70px;
+    width: min(100%, 480px);
+    margin: 0 auto;
+    padding: 0 0 82px;
     grid-template-columns: 1fr;
     gap: 0;
   }
 
   .product-gallery {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    overflow: visible;
   }
 
   .product-gallery img {
-    width: 88vw;
-    min-width: 88vw;
-    scroll-snap-align: start;
+    width: 100%;
+    min-width: 0;
+    max-width: 430px;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    object-position: center;
+    scroll-snap-align: unset;
   }
 
   .product-info {
-    padding: 35px 20px 0;
+    padding: 34px 18px 0;
     position: static;
+    text-align: center;
+  }
+
+  .product-info .product-category,
+  .product-price,
+  .installment {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .product-title-row {
+    position: relative;
+    justify-content: center;
+    padding: 0 54px;
+  }
+
+  .product-title-row .favorite-button {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  .option-group,
+  .product-description,
+  .stock-note {
+    text-align: left;
   }
 
   .product-page .purchase-row {
     position: sticky;
     z-index: 20;
     bottom: calc(52px + env(safe-area-inset-bottom));
-    margin-right: -10px;
-    margin-left: -10px;
-    padding: 11px 10px;
+    margin-right: -2px;
+    margin-left: -2px;
+    padding: 11px 2px;
     background: rgba(255, 255, 255, 0.97);
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.07);
     backdrop-filter: blur(14px);
