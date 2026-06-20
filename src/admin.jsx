@@ -893,13 +893,6 @@ export function AdminSettings() {
           <div className="setting-upload"><img src={form.logo} alt="" /><label className="upload-button"><ImagePlus size={17} /> Logoyu değiştir<input type="file" accept="image/*" onChange={(event) => upload(event, "logo")} /></label></div>
         </SettingsSection>
 
-        <SettingsSection title="Görünüm" description="Mağazanın ana renklerini belirleyin.">
-          <div className="color-settings">
-            <label>Ana renk<span><input type="color" name="primaryColor" value={form.primaryColor || "#0a0a0a"} onChange={update} /><input name="primaryColor" value={form.primaryColor || ""} onChange={update} /></span></label>
-            <label>Vurgu rengi<span><input type="color" name="accentColor" value={form.accentColor || "#a4743b"} onChange={update} /><input name="accentColor" value={form.accentColor || ""} onChange={update} /></span></label>
-          </div>
-        </SettingsSection>
-
         <SettingsSection title="Ana sayfa vitrini" description="Büyük açılış alanının metinleri ve slayt görselleri.">
           <div className="form-grid">
             <label className="wide">Başlık<input name="heroTitle" value={form.heroTitle || ""} onChange={update} /></label>
