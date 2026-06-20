@@ -1155,6 +1155,14 @@ img {
   align-content: start;
 }
 
+.product-gallery-item {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
 .product-gallery img {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -1171,8 +1179,40 @@ img {
   to { opacity: 1; transform: scale(1); }
 }
 
-.product-gallery img:only-child {
+.product-gallery-item:only-child {
   grid-column: 1 / -1;
+}
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  padding: 34px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.88);
+  animation: fadeIn 0.18s ease both;
+}
+
+.image-lightbox img {
+  max-width: min(96vw, 1180px);
+  max-height: 92vh;
+  object-fit: contain;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+}
+
+.image-lightbox-close {
+  width: 46px;
+  height: 46px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 
 .product-info {
@@ -1802,8 +1842,22 @@ img {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.46)), url("/images/hero-scarf.webp") center / cover;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   color: white;
+}
+
+.customer-auth-copy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.18));
+}
+
+.customer-auth-copy > div {
+  position: relative;
+  z-index: 1;
 }
 
 .customer-auth-copy h1,
@@ -1815,7 +1869,7 @@ img {
   letter-spacing: -0.035em;
 }
 
-.customer-auth-copy > p:not(.eyebrow) {
+.customer-auth-copy > div > p:not(.eyebrow) {
   max-width: 480px;
   margin: 22px 0 0;
   line-height: 1.75;
@@ -3788,6 +3842,10 @@ img {
     scroll-snap-align: unset;
   }
 
+  .product-gallery-item {
+    width: min(100%, 360px);
+  }
+
   .product-info {
     padding: 34px 18px 0;
     position: static;
@@ -4322,6 +4380,212 @@ img {
 
   .admin-page-head .admin-primary {
     width: 100%;
+  }
+}
+
+/* Polished admin redesign */
+.admin-shell {
+  grid-template-columns: 280px 1fr;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(164, 116, 59, 0.18), transparent 30vw),
+    radial-gradient(circle at 92% 0%, rgba(16, 24, 38, 0.12), transparent 34vw),
+    linear-gradient(135deg, #f8f4ee 0%, #f7f8fb 48%, #edf1f5 100%);
+}
+
+.admin-shell > aside {
+  margin: 18px 0 18px 18px;
+  height: calc(100vh - 36px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(16, 21, 28, 0.96), rgba(28, 21, 17, 0.98)),
+    radial-gradient(circle at top, rgba(164, 116, 59, 0.2), transparent 42%);
+  box-shadow: 18px 24px 70px rgba(14, 21, 30, 0.22);
+}
+
+.admin-logo {
+  height: auto;
+  margin: 0 0 18px;
+  padding: 16px 14px 22px;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-logo img {
+  width: 122px;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+}
+
+.admin-shell aside nav {
+  gap: 8px;
+}
+
+.admin-shell aside nav a,
+.admin-sidebar-bottom a,
+.admin-sidebar-bottom button {
+  min-height: 48px;
+  border-radius: 15px;
+  color: #d9d2c8;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.admin-shell aside nav a:hover,
+.admin-shell aside nav a.active,
+.admin-sidebar-bottom a:hover,
+.admin-sidebar-bottom button:hover {
+  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(164, 116, 59, 0.24));
+  color: #fff;
+  box-shadow: inset 3px 0 0 #d8b47d;
+}
+
+.admin-main {
+  padding: 18px 18px 18px 0;
+}
+
+.admin-topbar {
+  height: 76px;
+  margin-left: 18px;
+  border: 1px solid rgba(220, 224, 228, 0.78);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 18px 50px rgba(28, 38, 52, 0.08);
+}
+
+.admin-page {
+  padding: 30px 0 34px 18px;
+}
+
+.admin-page-head {
+  padding: 0 8px;
+}
+
+.admin-page-head h1 {
+  font-size: clamp(32px, 3.2vw, 48px);
+  letter-spacing: -0.045em;
+}
+
+.admin-page-head p {
+  font-size: 13px;
+}
+
+.stat-grid {
+  gap: 18px;
+}
+
+.stat-card,
+.admin-card,
+.category-admin-card {
+  border: 1px solid rgba(225, 221, 213, 0.88);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 24px 70px rgba(33, 42, 55, 0.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.stat-card {
+  padding: 24px;
+}
+
+.stat-card::after {
+  width: 120px;
+  height: 120px;
+  right: -44px;
+  top: -48px;
+  background: linear-gradient(135deg, rgba(164, 116, 59, 0.22), rgba(255, 255, 255, 0));
+}
+
+.stat-card > strong {
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+
+.admin-card-head {
+  padding: 22px 24px;
+}
+
+.admin-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  background: transparent;
+}
+
+.admin-table th {
+  border: 0;
+  color: #8b7962;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  border-top: 1px solid #ece8df;
+  border-bottom: 1px solid #ece8df;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.admin-table tr td:first-child {
+  border-left: 1px solid #ece8df;
+  border-radius: 16px 0 0 16px;
+}
+
+.admin-table tr td:last-child {
+  border-right: 1px solid #ece8df;
+  border-radius: 0 16px 16px 0;
+}
+
+.admin-primary,
+.admin-secondary,
+.upload-button {
+  border-radius: 14px;
+}
+
+.admin-primary {
+  border-color: #151515;
+  background: linear-gradient(135deg, #111, #2a2118);
+  box-shadow: 0 12px 28px rgba(17, 17, 17, 0.18);
+}
+
+.settings-section {
+  overflow: hidden;
+}
+
+.settings-section-head {
+  background: linear-gradient(135deg, rgba(164, 116, 59, 0.08), rgba(255, 255, 255, 0));
+}
+
+.setting-upload.wide-upload {
+  margin-top: 18px;
+}
+
+.setting-upload.wide-upload img {
+  width: min(100%, 360px);
+  height: 210px;
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    display: block;
+  }
+
+  .admin-shell > aside {
+    margin: 0;
+    height: 100vh;
+    border-radius: 0 26px 26px 0;
+  }
+
+  .admin-main {
+    padding: 0;
+  }
+
+  .admin-topbar {
+    margin: 10px;
+  }
+
+  .admin-page {
+    padding: 20px 10px 90px;
   }
 }
 

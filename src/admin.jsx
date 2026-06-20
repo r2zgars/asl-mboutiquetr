@@ -914,6 +914,20 @@ export function AdminSettings() {
           </div>
         </SettingsSection>
 
+        <SettingsSection title="Giriş ve kayıt ekranı" description="Müşteri giriş/kayıt sayfasındaki fotoğraf ve metinleri düzenleyin.">
+          <div className="form-grid">
+            <label>Küçük başlık<input name="authEyebrow" value={form.authEyebrow || ""} onChange={update} /></label>
+            <label>Giriş başlığı<input name="authLoginTitle" value={form.authLoginTitle || ""} onChange={update} /></label>
+            <label className="wide">Giriş açıklaması<textarea name="authLoginText" value={form.authLoginText || ""} onChange={update} rows="2" /></label>
+            <label>Kayıt başlığı<input name="authRegisterTitle" value={form.authRegisterTitle || ""} onChange={update} /></label>
+            <label className="wide">Kayıt açıklaması<textarea name="authRegisterText" value={form.authRegisterText || ""} onChange={update} rows="2" /></label>
+          </div>
+          <div className="setting-upload wide-upload">
+            <img src={form.authImage || "/images/hero-vest.webp"} alt="" />
+            <label className="upload-button"><ImagePlus size={17} /> Giriş fotoğrafını değiştir<input type="file" accept="image/*" onChange={(event) => upload(event, "authImage")} /></label>
+          </div>
+        </SettingsSection>
+
         <SettingsSection title="WhatsApp ve iletişim" description="WhatsApp butonu ve mağaza bilgilerinde gösterilir.">
           <div className="form-grid">
             <label>Telefon<input name="phone" value={form.phone || ""} onChange={update} /></label>

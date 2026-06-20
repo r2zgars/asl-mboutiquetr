@@ -77,7 +77,11 @@ const requireAdmin = asyncRoute(async (request, response, next) => {
 });
 
 async function getCustomer(request) {
-  return data.getSessionUser(parseCookies(request).aslim_customer, "customer");
+  const cookies = parseCookies(request);
+  return (
+    (await data.getSessionUser(cookies.aslim_customer, "customer")) ||
+    (await data.getSessionUser(cookies.aslim_admin, "admin"))
+  );
 }
 
 const requireCustomer = asyncRoute(async (request, response, next) => {
@@ -167,7 +171,7 @@ app.post("/api/auth/login", asyncRoute(async (request, response) => {
   const session = makeSession();
   await data.createSession({ ...session, userId: user.id });
   if (user.role === "admin") {
-    response.setHeader("Set-Cookie", adminCookie(session.token));
+    response.setHeader("Set-Cookie", [adminCookie(session.token), customerCookie(session.token)]);
     return response.json({
       admin: true,
       redirect: "/admin",
@@ -274,13 +278,13 @@ app.post("/api/admin/login", asyncRoute(async (request, response) => {
 
   const session = makeSession();
   await data.createSession({ ...session, userId: user.id });
-  response.setHeader("Set-Cookie", adminCookie(session.token));
+  response.setHeader("Set-Cookie", [adminCookie(session.token), customerCookie(session.token)]);
   response.json({ id: user.id, email: user.email, name: user.name });
 }));
 
 app.post("/api/admin/logout", requireAdmin, asyncRoute(async (request, response) => {
   await data.deleteSession(request.sessionToken);
-  response.setHeader("Set-Cookie", adminCookie("", 0));
+  response.setHeader("Set-Cookie", [adminCookie("", 0), customerCookie("", 0)]);
   response.json({ ok: true });
 }));
 

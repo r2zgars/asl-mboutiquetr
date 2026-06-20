@@ -458,6 +458,7 @@ export function ProductPage() {
   const product = products.find((item) => item.slug === (productSlug || slug));
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const galleryImages = getVariantImages(product, color, size);
 
   useEffect(() => {
@@ -475,9 +476,19 @@ export function ProductPage() {
     <div className="product-page reveal">
       <div className="product-gallery variant-gallery" key={`${color}-${size}`}>
         {(galleryImages.length ? galleryImages : ["/images/hero-scarf.webp"]).map((image) => (
-          <img key={image} src={image} alt={product.name} />
+          <button className="product-gallery-item" key={image} type="button" onClick={() => setPreviewImage(image)}>
+            <img src={image} alt={product.name} />
+          </button>
         ))}
       </div>
+      {previewImage && (
+        <div className="image-lightbox" onClick={() => setPreviewImage("")}>
+          <button className="image-lightbox-close" type="button" onClick={() => setPreviewImage("")}>
+            <X size={24} />
+          </button>
+          <img src={previewImage} alt={product.name} onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
       <div className="product-info">
         <p className="product-category">{product.category_name}</p>
         <div className="product-title-row">
@@ -556,7 +567,7 @@ export function InfoPage({ type }) {
 
 export function CustomerAuthPage({ mode }) {
   const register = mode === "register";
-  const { customer, refreshAuth } = useStore();
+  const { customer, refreshAuth, settings } = useStore();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState("");
@@ -599,10 +610,15 @@ export function CustomerAuthPage({ mode }) {
 
   return (
     <div className="customer-auth-page">
-      <section className="customer-auth-copy">
-        <p className="eyebrow">ASLIM BOUTIQUE</p>
-        <h1>{register ? "Aramıza katılın." : "Tekrar hoş geldiniz."}</h1>
-        <p>{register ? "Siparişlerinizi daha kolay yönetmek için hesabınızı oluşturun." : "Hesabınıza giriş yaparak alışverişinize devam edin."}</p>
+      <section
+        className="customer-auth-copy"
+        style={{ backgroundImage: `url("${settings.authImage || "/images/hero-vest.webp"}")` }}
+      >
+        <div>
+          <p className="eyebrow">{settings.authEyebrow || "ASLIM BOUTIQUE"}</p>
+          <h1>{register ? (settings.authRegisterTitle || "Aramıza katılın.") : (settings.authLoginTitle || "Tekrar hoş geldiniz.")}</h1>
+          <p>{register ? (settings.authRegisterText || "Favorilerinizi saklamak için hesabınızı oluşturun.") : (settings.authLoginText || "Hesabınıza giriş yaparak favorilerinize devam edin.")}</p>
+        </div>
       </section>
       <form className="customer-auth-form" onSubmit={submit}>
         <h2>{register ? "Kayıt Ol" : "Giriş Yap"}</h2>
